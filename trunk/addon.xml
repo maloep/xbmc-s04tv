@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon id="plugin.video.s04tv" name="S04tv" version="0.4" provider-name="malte">
+    <requires>
+        <import addon="xbmc.python" version="1.0"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="default.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <summary lang="de">S04tv</summary>
+        <summary lang="en">S04tv</summary>
+        <description lang="de">Schalalala</description>
+        <description lang="en">Schalalala</description>
+    </extension>
+</addon>
