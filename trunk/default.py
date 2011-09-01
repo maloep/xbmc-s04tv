@@ -32,11 +32,9 @@ BASE_URL = 'https://www.s04tv.de/'
 browser = mechanize.Browser()
 
 
-def buildVideoList(url):
+def buildVideoList(doc):
+	xbmc.log('buildVideoList')
 	
-	browser.open(url)
-	doc = browser.response().read()	
-
 	#parse complete document
 	soup = BeautifulSoup(''.join(doc))
 	
@@ -75,10 +73,8 @@ def buildVideoList(url):
 		#xbmcplugin.addDirectoryItem(thisPlugin, listitem=listItem, url='', isFolder=True)
 
 
-def buildVideoLinks(url, name):
-	
-	browser.open(url)
-	doc = browser.response().read()
+def buildVideoLinks(doc, name):
+	xbmc.log('buildVideoLinks')
 
 	#parse complete document
 	soup = BeautifulSoup(''.join(doc))
@@ -125,15 +121,32 @@ def get_params():
     return param
 
 
-def login():
+def login(cookieFile):
+	
+	cj = mechanize.LWPCookieJar()
+	
+	try:
+		xbmc.log('load cookie file')
+		#ignore_discard=True loads session cookies too
+		cj.load(cookieFile, ignore_discard=True)
+		browser.set_cookiejar(cj)
 		
-	xbmc.log('begin login')
+		xbmc.log('cookies loaded, checking if they are still valid...')
+		browser.open("https://www.s04tv.de")
+		doc = browser.response().read()
+		
+		loginStatus = checkLogin(doc)
+		if(loginStatus == 0):
+			return True
+	#if cookie file does not exist we just keep going...
+	except IOError:
+		xbmc.log('Error loading cookie file. Trying to log in again.')
+		pass
+	
+	xbmc.log('Logging in')
 	username = settings.getSetting('username')
 	xbmc.log('username: ' +username) 
 	password = settings.getSetting('password')
-		
-	cookies = mechanize.CookieJar()
-	opener = mechanize.build_opener(mechanize.HTTPCookieProcessor(cookies))
 		
 	browser.open("https://www.s04tv.de")
 	#HACK: find out how to address form by name
@@ -142,38 +155,45 @@ def login():
 	browser.form['password'] = password
 	browser.submit()
 	
+	cj.save(cookieFile, ignore_discard=True)
+	
 	doc = browser.response().read()
+	loginStatus = checkLogin(doc)			
+	return loginStatus == 0
+	
+
+def checkLogin(doc):
 	
 	matchLoginSuccessful = re.search('Sie sind angemeldet als', doc, re.IGNORECASE)
 	if(matchLoginSuccessful):
 		xbmc.log('login successful')
-		return True
+		return 0
 	
 	matchLoginFailed = re.search('Anmeldung fehlgeschlagen', doc, re.IGNORECASE)
 	if(matchLoginFailed):
 		 xbmcgui.Dialog().ok(PLUGINNAME, 'Login failed for user "%s". Please validate your credentials.' %username)
-		 return False
-	else:		
-		xbmc.log('Login status could not be determined. Maybe the code of the site has changed.')
+		 return 1
+	else:
+		xbmc.log('You are not logged in')
 		#Guess we are logged in
-		return True
+		return 2
 
 
-def runPlugin():
+def runPlugin(doc):
 	
 	print 'runPlugin' 
 	
-	if mode==None or url==None or len(url)<1:
+	if mode==None or doc==None or len(doc)<1:
 		print "mode 0"
-		buildVideoList(BASE_URL)
+		buildVideoList(doc)
        
 	elif mode==1:
 		print "mode 1"
-		buildVideoList(url)
+		buildVideoList(doc)
 	        
 	elif mode==2:
 		print "mode 2"	
-		buildVideoLinks(url,name)
+		buildVideoLinks(doc,name)
 	
 	xbmcplugin.endOfDirectory(thisPlugin)
 
@@ -204,9 +224,14 @@ print "Name: "+str(name)
 
 settings = xbmcaddon.Addon(id='%s' %PLUGINID)
 
-loggedIn = login()
-if(loggedIn):
-	runPlugin()
+if(url == None):
+	url = BASE_URL
+	
+success = login('C:\\Users\\malte\\AppData\\Roaming\\XBMC\\addons\\plugin.video.s04tv\\cookies.txt')
 
+if(success):
+	browser.open(url)
+	doc = browser.response().read()
+	runPlugin(doc)
 
 
