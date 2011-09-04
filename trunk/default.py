@@ -55,7 +55,6 @@ def buildVideoList(doc):
 		except:
 			pass		
 		
-		
 		imageTag = content.find('div', attrs={'class' : 'field Bild'})
 		link = imageTag.find('a')
 		linkValue = link['href']
@@ -65,6 +64,22 @@ def buildVideoList(doc):
 		url = BASE_URL + linkValue
 		
 		addDir(itemTitle, url, 2, imageUrlValue)
+	
+	#previous page
+	previousTag = soup.find('a', attrs={'class' : 'previous'})
+	if(previousTag):
+		pageLink = previousTag['href']
+		itemTitle = __language__(30002)
+		url = BASE_URL + pageLink
+		addDir(itemTitle, url, 1, '')
+	
+	#next page
+	nextTag = soup.find('a', attrs={'class' : 'next'})
+	if(nextTag):
+		pageLink = nextTag['href']
+		itemTitle = __language__(30003)
+		url = BASE_URL + pageLink
+		addDir(itemTitle, url, 1, '')
 
 
 def buildVideoLinks(doc, name):
@@ -73,10 +88,13 @@ def buildVideoLinks(doc, name):
 	#parse complete document
 	soup = BeautifulSoup(''.join(doc))
 	videoTag = soup.find('video')	
-	videoUrl = videoTag['src']
 	
-	xbmc.log('start playing video: ' +videoUrl)
-	addLink(name, videoUrl, '')
+	if(videoTag):
+		videoUrl = videoTag['src']
+		xbmc.log('start playing video: ' +videoUrl)
+		addLink(name, videoUrl, '')
+	else:
+		xbmc.log('Error while loading video from page. Maybe you are not logged in or site structure has changed.')
 
 
 def addDir(name,url,mode,iconimage):
@@ -97,21 +115,20 @@ def addLink(name,url,iconimage):
 
 
 def get_params():
-    param = []
-    paramstring = sys.argv[2]
-    if len(paramstring) >= 2:
-        params = sys.argv[2]
-        cleanedparams = params.replace('?','')
-        if (params[len(params)-1] == '/'):
-            params = params[0:len(params)-2]
-        pairsofparams = cleanedparams.split('&')
-        param = {}
-        for i in range(len(pairsofparams)):
-            splitparams = {}
-            splitparams = pairsofparams[i].split('=')
-            if (len(splitparams)) == 2:
-                param[splitparams[0]] = splitparams[1]
-    return param
+    ''' Convert parameters encoded in a URL to a dict. '''
+    parameters = sys.argv[2]
+    
+    paramDict = {}
+    if parameters:
+        paramPairs = parameters[1:].split("&")
+        for paramsPair in paramPairs:
+            paramSplits = paramsPair.split('=')
+            if (len(paramSplits)) == 2:
+                paramDict[paramSplits[0]] = paramSplits[1]
+            #HACK: support urls like ?page=2
+            elif (len(paramSplits)) == 3:
+                paramDict[paramSplits[0]] = paramSplits[1] +'=' +paramSplits[2] 
+    return paramDict
 
 
 def login(cookieFile):
@@ -168,25 +185,20 @@ def checkLogin(doc, username):
 		 xbmcgui.Dialog().ok(PLUGINNAME, __language__(30100) %username, __language__(30101))
 		 return 1
 	else:
-		xbmc.log('You are not logged in')
+		xbmc.log('You are not logged in.')
 		#Guess we are logged in
 		return 2
 
 
 def runPlugin(doc):
 	
-	print 'runPlugin' 
-	
 	if mode==None or doc==None or len(doc)<1:
-		print "mode 0"
 		buildVideoList(doc)
        
 	elif mode==1:
-		print "mode 1"
 		buildVideoList(doc)
 	        
 	elif mode==2:
-		print "mode 2"	
 		buildVideoLinks(doc,name)
 	
 	xbmcplugin.endOfDirectory(thisPlugin)
@@ -218,8 +230,9 @@ print "Name: "+str(name)
 
 if(url == None):
 	url = BASE_URL
-	
-success = login('C:\\Users\\malte\\AppData\\Roaming\\XBMC\\addons\\plugin.video.s04tv\\cookies.txt')
+
+path = xbmc.translatePath('special://profile/addon_data/%s' %(PLUGINID))
+success = login(os.path.join(path, 'cookies.txt'))
 
 if(success):
 	browser.open(url)
