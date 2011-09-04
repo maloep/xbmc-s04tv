@@ -9,66 +9,29 @@ try:
 	addonPath = addon.getAddonInfo('path')
 except:
 	addonPath = os.getcwd()
-		
+
 BASE_RESOURCE_PATH = os.path.join(addonPath, "resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib", "BeautifulSoup" ) )
+sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib", "mechanize" ) )
 
 from BeautifulSoup import *
-
-
 import mechanize
-br = mechanize.Browser()
-br.open("https://www.s04tv.de")
-br.select_form(nr=0)
-br.form['username'] = 'test'
-br.form['password'] = 'test'
-br.submit()
-#print br.response().read()
 
+browser = mechanize.Browser()
 
-url = 'https://www.s04tv.de/index.php/videos/items/lh_hjk.html'
-br.open(url)
-print br.response().read()
+url = 'https://www.s04tv.de/?page=2'
+browser.open(url)
 
-"""
-URL = 'https://www.s04tv.de'
-
-
-response = urllib2.urlopen(URL)
-doc = response.read()
-response.close()
-
-#parse complete document
+doc = browser.response().read()
 soup = BeautifulSoup(''.join(doc))
 
-container = soup.findAll('div', attrs={'class' : 'layout_full'})
+previousTag = soup.find('a', attrs={'class' : 'previous'})
+print previousTag['href']
 
-#iterate content
-for content in container[0].contents:
-	#ignore NavigableStrings
-	if(type(content).__name__ == 'NavigableString'):		
-		continue
-		
-	
-	titlePart1 = content.find('div', attrs={'class' : 'field Headline'})
-	titlePart1Value = titlePart1.find('div', attrs={'class' : 'value'})
-	print titlePart1Value.string
-	
-	try:
-		titlePart2 = content.find('div', attrs={'class' : 'field untertitel'})
-		titlePart2Value = titlePart2.find('div', attrs={'class' : 'value'})
-		print titlePart2Value.string
-	except:
-		pass	
-	
-	imageTag = content.find('div', attrs={'class' : 'field Bild'})
-	link = imageTag.find('a')
-	print link['href']
-	imageUrl = imageTag.find('img')	
-	print imageUrl['src']
-		
-"""
+nextTag = soup.find('a', attrs={'class' : 'next'})
+print nextTag['href']
+
 
 
 
