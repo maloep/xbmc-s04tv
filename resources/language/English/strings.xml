@@ -2,4 +2,7 @@
 <strings>
 	<string id="30000">Username</string>
 	<string id="30001">Password</string>
+	
+	<string id="30100">Login failed for user "%s".</string>	
+	<string id="30101">Please validate your credentials.</string>	
 </strings>

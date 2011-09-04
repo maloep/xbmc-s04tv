@@ -5,15 +5,16 @@ import xbmcaddon
 import os, sys, re
 import urllib, urllib2
 
+PLUGINNAME = 'S04tv'
+PLUGINID = 'plugin.video.s04tv'
+BASE_URL = 'https://www.s04tv.de/'
 
 # Shared resources
 addonPath = ''
-try:
-	import xbmcaddon
-	addon = xbmcaddon.Addon(id='plugin.video.s04tv')
-	addonPath = addon.getAddonInfo('path')
-except:
-	addonPath = os.getcwd()
+
+import xbmcaddon
+__addon__ = xbmcaddon.Addon(id='plugin.video.s04tv')
+addonPath = __addon__.getAddonInfo('path')
 		
 BASE_RESOURCE_PATH = os.path.join(addonPath, "resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
@@ -23,12 +24,9 @@ sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib", "mechanize" ) )
 from BeautifulSoup import BeautifulSoup
 import mechanize
 
+__language__ = __addon__.getLocalizedString
 thisPlugin = int(sys.argv[1])
 
-PLUGINNAME = 'S04tv'
-PLUGINID = 'plugin.video.s04tv'
-BASE_URL = 'https://www.s04tv.de/'
-	
 browser = mechanize.Browser()
 
 
@@ -63,14 +61,10 @@ def buildVideoList(doc):
 		linkValue = link['href']
 		imageUrl = imageTag.find('img')	
 		imageUrlValue = BASE_URL +imageUrl['src']
-	
-		#url = sys.argv[0] + '?' + urllib.urlencode(parameters)
+			
 		url = BASE_URL + linkValue
 		
 		addDir(itemTitle, url, 2, imageUrlValue)
-		
-		#listItem = xbmcgui.ListItem(itemTitle, iconImage=imageUrlValue)
-		#xbmcplugin.addDirectoryItem(thisPlugin, listitem=listItem, url='', isFolder=True)
 
 
 def buildVideoLinks(doc, name):
@@ -81,47 +75,50 @@ def buildVideoLinks(doc, name):
 	videoTag = soup.find('video')	
 	videoUrl = videoTag['src']
 	
-	print 'start playing video: ' +videoUrl
+	xbmc.log('start playing video: ' +videoUrl)
 	addLink(name, videoUrl, '')
 
 
 def addDir(name,url,mode,iconimage):
-    u=sys.argv[0]+"?url="+url+"&mode="+str(mode)+"&name="+name
-    ok=True
-    liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
-    liz.setInfo( type="Video", infoLabels={ "Title": name } )
-    ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
+    u = sys.argv[0] +"?url=" +url +"&mode=" +str(mode)+"&name=" +name
+    ok = True
+    liz = xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
+    liz.setInfo(type="Video", infoLabels={"Title": name})
+    ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz, isFolder=True)
     return ok
    
 
 def addLink(name,url,iconimage):
-    ok=True
-    liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
-    liz.setInfo( type="Video", infoLabels={ "Title": name } )
-    ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
+    ok = True
+    liz = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
+    liz.setInfo(type="Video", infoLabels={ "Title": name})
+    ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=liz)
     return ok
 
 
 def get_params():
-    param=[]
-    paramstring=sys.argv[2]
-    if len(paramstring)>=2:
-            params=sys.argv[2]
-            cleanedparams=params.replace('?','')
-            if (params[len(params)-1]=='/'):
-                    params=params[0:len(params)-2]
-            pairsofparams=cleanedparams.split('&')
-            param={}
-            for i in range(len(pairsofparams)):
-                    splitparams={}
-                    splitparams=pairsofparams[i].split('=')
-                    if (len(splitparams))==2:
-                            param[splitparams[0]]=splitparams[1]
-                            
+    param = []
+    paramstring = sys.argv[2]
+    if len(paramstring) >= 2:
+        params = sys.argv[2]
+        cleanedparams = params.replace('?','')
+        if (params[len(params)-1] == '/'):
+            params = params[0:len(params)-2]
+        pairsofparams = cleanedparams.split('&')
+        param = {}
+        for i in range(len(pairsofparams)):
+            splitparams = {}
+            splitparams = pairsofparams[i].split('=')
+            if (len(splitparams)) == 2:
+                param[splitparams[0]] = splitparams[1]
     return param
 
 
 def login(cookieFile):
+	
+	username = __addon__.getSetting('username')
+	xbmc.log('username: ' +username) 
+	password = __addon__.getSetting('password')
 	
 	cj = mechanize.LWPCookieJar()
 	
@@ -135,7 +132,7 @@ def login(cookieFile):
 		browser.open("https://www.s04tv.de")
 		doc = browser.response().read()
 		
-		loginStatus = checkLogin(doc)
+		loginStatus = checkLogin(doc, username)
 		if(loginStatus == 0):
 			return True
 	#if cookie file does not exist we just keep going...
@@ -143,10 +140,7 @@ def login(cookieFile):
 		xbmc.log('Error loading cookie file. Trying to log in again.')
 		pass
 	
-	xbmc.log('Logging in')
-	username = settings.getSetting('username')
-	xbmc.log('username: ' +username) 
-	password = settings.getSetting('password')
+	xbmc.log('Logging in')	
 		
 	browser.open("https://www.s04tv.de")
 	#HACK: find out how to address form by name
@@ -158,11 +152,11 @@ def login(cookieFile):
 	cj.save(cookieFile, ignore_discard=True)
 	
 	doc = browser.response().read()
-	loginStatus = checkLogin(doc)			
+	loginStatus = checkLogin(doc, username)			
 	return loginStatus == 0
 	
 
-def checkLogin(doc):
+def checkLogin(doc, username):
 	
 	matchLoginSuccessful = re.search('Sie sind angemeldet als', doc, re.IGNORECASE)
 	if(matchLoginSuccessful):
@@ -171,7 +165,7 @@ def checkLogin(doc):
 	
 	matchLoginFailed = re.search('Anmeldung fehlgeschlagen', doc, re.IGNORECASE)
 	if(matchLoginFailed):
-		 xbmcgui.Dialog().ok(PLUGINNAME, 'Login failed for user "%s". Please validate your credentials.' %username)
+		 xbmcgui.Dialog().ok(PLUGINNAME, __language__(30100) %username, __language__(30101))
 		 return 1
 	else:
 		xbmc.log('You are not logged in')
@@ -221,8 +215,6 @@ except:
 print "Mode: "+str(mode)
 print "URL: "+str(url)
 print "Name: "+str(name)
-
-settings = xbmcaddon.Addon(id='%s' %PLUGINID)
 
 if(url == None):
 	url = BASE_URL
