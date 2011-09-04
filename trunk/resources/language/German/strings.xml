@@ -2,4 +2,7 @@
 <strings>
 	<string id="30000">Benutzername</string>
 	<string id="30001">Passwort</string>
+	
+	<string id="30100">Login fehlgeschlagen für Benutzer "%s".</string>
+	<string id="30101">Bitte überprüfe Deine Anmeldedaten.</string>
 </strings>
