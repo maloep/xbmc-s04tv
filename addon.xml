@@ -8,9 +8,9 @@
     </extension>
     <extension point="xbmc.addon.metadata">
         <platform>all</platform>
-        <summary lang="de">S04tv</summary>
-        <summary lang="en">S04tv</summary>
-        <description lang="de">Schalalala</description>
-        <description lang="en">Schalalala</description>
+        <summary lang="de">Videos von S04tv ansehen</summary>
+        <summary lang="en">Watch videos from S04tv</summary>
+        <description lang="de">Online Video Portal des FC Schalke 04. Alle Spiele des S04 in re-Live (15 Minuten nach Abfiff), Interviews, exklusive Berichte und Specials rund um FC Schalke 04. Setzt einen S04tv Benutzer Account voraus. Mehr Details auf https://www.s04tv.de.</description>
+        <description lang="en">Online video portal from FC Schalke 04 - German Football team. Watch all videos from S04tv including all S04 matches in re-Live (15 minutes after the match has ended). Requires S04tv user account. See https://www.s04tv.de for more details.</description>
     </extension>
 </addon>
