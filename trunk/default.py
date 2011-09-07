@@ -37,32 +37,40 @@ def buildVideoList(doc):
 	soup = BeautifulSoup(''.join(doc))
 	
 	container = soup.findAll('div', attrs={'class' : 'layout_full'})
+	if(not container):
+		xbmc.log('Error while building video list. class "layout_full" not found.')
+		return
 	
 	#iterate content
 	for content in container[0].contents:
 		#ignore NavigableStrings
 		if(type(content).__name__ == 'NavigableString'):		
 			continue
-				
-		titlePart1 = content.find('div', attrs={'class' : 'field Headline'})
-		titlePart1Value = titlePart1.find('div', attrs={'class' : 'value'})
-		itemTitle = titlePart1Value.string
+						
+		itemTitle = findTitle(content, 'div', {'class' : 'field Headline'})		
+		if(itemTitle == ''):
+			xbmc.log('Error while building video list. class "field Headline" not found.')
+			continue
 		
-		try:
-			titlePart2 = content.find('div', attrs={'class' : 'field untertitel'})
-			titlePart2Value = titlePart2.find('div', attrs={'class' : 'value'})
-			itemTitle = itemTitle +': ' +titlePart2Value.string
-		except:
-			pass		
+		titlePart2 = findTitle(content, 'div', {'class' : 'field untertitel'})		
+		if(titlePart2 == ''):
+			titlePart2 = findTitle(content, 'div', {'class' : 'field Beitragsart'})
+		itemTitle = itemTitle +': ' +titlePart2
+			
 		
+		linkValue = ''
+		imageUrlValue = ''
 		imageTag = content.find('div', attrs={'class' : 'field Bild'})
-		link = imageTag.find('a')
-		linkValue = link['href']
-		imageUrl = imageTag.find('img')	
-		imageUrlValue = BASE_URL +imageUrl['src']
+		if(imageTag):
+			link = imageTag.find('a')
+			linkValue = link['href']
+			imageUrl = imageTag.find('img')	
+			imageUrlValue = BASE_URL +imageUrl['src']
+		else:
+			xbmc.log('Error while building video list. class "field Bild" not found.')
+			continue
 			
 		url = BASE_URL + linkValue
-		
 		addDir(itemTitle, url, 2, imageUrlValue)
 	
 	#previous page
@@ -145,6 +153,16 @@ def addLink(name,url,iconimage):
     liz.setInfo(type="Video", infoLabels={ "Title": name})
     ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=liz)
     return ok
+
+
+def findTitle(content, searchTag, attrs):
+	itemTitle = ''
+	titlePart1 = content.find(searchTag, attrs)				
+	if(titlePart1):
+		titlePart1Value = titlePart1.find('div', attrs={'class' : 'value'})				
+		if(titlePart1Value):
+			itemTitle = titlePart1Value.string
+	return itemTitle
 
 
 def get_params():
