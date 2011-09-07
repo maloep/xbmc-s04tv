@@ -1,679 +1,492 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-                                            <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
-                                            <head>
-                                            <!--
-                                            
-                                            	This website is powered by Contao Open Source CMS :: Licensed under GNU/LGPL
-                                            	Copyright ©2005-2011 by Leo Feyer :: Extensions are copyright of their respective owners
-                                            	Visit the project website at http://www.contao.org for more information
-                                            
-                                            //-->
-                                            <base href="https://www.s04tv.de/"></base>
-                                            <title>videos - S04tv</title>
-                                            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-                                            <meta http-equiv="Content-Style-Type" content="text/css" />
-                                            <meta http-equiv="Content-Script-Type" content="text/javascript" />
-                                            <meta name="description" content="" />
-                                            <meta name="keywords" content="" />
-                                            <meta name="robots" content="index,follow" />
-                                            <style type="text/css" media="screen">
-                                            <!--/*--><![CDATA[/*><!--*/
-                                            #wrapper { width:960px; margin:0 auto; }
-                                            #header { height:159px; }
-                                            #footer { height:50px; }
-                                            /*]]>*/-->
-                                            </style>
-                                            <link rel="stylesheet" href="system/contao.css" type="text/css" media="screen" />
-                                            <!--[if lte IE 7]><link rel="stylesheet" href="system/iefixes.css" type="text/css" media="screen" /><![endif]-->
-                                            <link rel="stylesheet" href="plugins/mediabox/css/mediabox.css?1.2.5" type="text/css" media="screen" />
-                                            <link rel="stylesheet" href="s04tv_css.css?1313520980" type="text/css" media="all" />
-                                            <link rel="stylesheet" href="footer.css?1313520162" type="text/css" media="all" />
-                                            <link rel="stylesheet" href="video-liste.css?1313660576" type="text/css" media="all" />
-                                            <link rel="stylesheet" href="header.css?1313521720" type="text/css" media="all" />
-                                            <link rel="stylesheet" href="video-leser.css?1312188624" type="text/css" media="all" />
-                                            <link rel="stylesheet" href="video-filter.css?1312330697" type="text/css" media="all" />
-                                            <!--[if IE]><link rel="stylesheet" href="ie.css?1312897029" type="text/css" media="all" /><![endif]-->
-                                            <script type="text/javascript" src="plugins/slideshow2/mootools/mootools-core.js"></script>
-                                            <script type="text/javascript" src="plugins/slideshow2/mootools/mootools-more.js"></script>
-                                            <script type="text/javascript" src="plugins/jquery/js/jquery-1.6.1.min.js"></script>
-                                            
-                                            <script src="tl_files/_system/_js/swfobject.js" type="text/javascript" charset="utf-8"></script>
-                                            <script src="tl_files/_system/_js/nonverblaster.js" type="text/javascript" charset="utf-8"></script>
-                                            
-                                            <script type="text/javascript">
-                                            <!--
-                                            if (screen.width <= 499) {
-                                            document.location = "http://www.s04tv.de/index.php/mobile-login.html";
-                                            }
-                                            //-->
-                                            </script>
-                                            
-                                            <script type="text/javascript">
-                                            $(function(){
-                                                $("a").hover(function(){
-                                                    $(this).stop().attr('title', '');},
-                                                    function(){$(this).stop().attr();
-                                                    });
-                                            });
-                                            </script>
-                                            <link rel="icon" href="http://www.s04tv.de/favicon.ico" type="image/x-icon">
-                                            
-                                            <script>
-                                            $(document).ready(function() {
-                                                //Tooltips
-                                                $(".mod_cataloglist .item").hover(function(){
-                                                    tip = $(this).find('.Text');
-                                                    tip.show(); //Show tooltip
-                                                }, function() {
-                                                    tip.hide(); //Hide tooltip
-                                                }).mousemove(function(e) {
-                                                    var mousex = e.pageX - 320 ; //Get X coodrinates
-                                                    var mousey = e.pageY - 130 ; //Get Y coordinates
-                                                    var tipWidth = tip.width(); //Find width of tooltip
-                                                    var tipHeight = tip.height(); //Find height of tooltip
-                                            
-                                                    //Distance of element from the right edge of viewport
-                                                    var tipVisX = $(window).width() - (mousex + tipWidth);
-                                                    //Distance of element from the bottom of viewport
-                                                    var tipVisY = $(window).height() - (mousey + tipHeight);
-                                            
-                                                    if ( tipVisX < 20 ) { //If tooltip exceeds the X coordinate of viewport
-                                                        mousex = e.pageX - tipWidth - 20;
-                                                    } if ( tipVisY < 20 ) { //If tooltip exceeds the Y coordinate of viewport
-                                                        mousey = e.pageY - tipHeight - 20;
-                                                    }
-                                                   
-                                                });
-                                            });
-                                            </script>
-                                            </head>
-                                            
-                                            <body id="top">
-                                            <div id="wrapper">
-                                            
-                                            <div id="header">
-                                            <div class="inside">
-                                            
-                                            <ul id="header-top">
-                                            
-                                            <li style="float:left;"><a href="http://www.schalke04.de" target="_blank">Schalke04.de</a></li>
-                                            <li style="float:left;">
-                                            <div class="ce_lightboxtext block">
-                                            
-                                            <a href="#mb_4533" class="hyperlink_txt" rel="lightbox[lightbox7925 640 280]" title="">Systemvoraussetzungen</a>
-                                            <div id="mb_4533" style="display: none;"><div style="width:640px; height:280px; overflow:hidden; color:#ffffff; background-color:#000000;  "><div style="padding:5px 10px;;">
-                                            
-                                            <p><strong>Systemvoraussetzungen</strong></p>
-                                            
-                                            <p>• <span style="text-decoration: underline;">Betriebssystem</span>: Microsoft Windows 7 / Vista / XP / Mac OS X<br />• <span style="text-decoration: underline;">Prozessor</span>: Intel Pentium 4 3,0 GHz, Dual-Core-CPU mit 2,0 GHz oder AMD Athlon 64 X2 mit 2,0 GHz<br />• <span style="text-decoration: underline;">Arbeitsspeicher</span>: 1 GB bei Windows XP, 2 GiByte bei Windows Vista, 7 und Mac OS X<br />• <span style="text-decoration: underline;">Grafikkarte</span>: 128 MB VRAM oder mehr, DirectX 9-kompatibel<br />• <span style="text-decoration: underline;">Audio</span>: DirectX 9.0c-kompatibel<br />• <span style="text-decoration: underline;">Browser</span>: Internet Explorer 8+ / Firefox 3.6+ / Safari 4+ / Chrome 10+<br />• <span style="text-decoration: underline;">Plugin</span>: Adobe Flash Player<br />• <span style="text-decoration: underline;">JavaScript</span>: aktiviert in Internet Explorer &amp; Firefox - (für Safari optional)<br />• <span style="text-decoration: underline;">Internetgeschwindigkeit</span>: 2Mbit/s (DSL 2000)</p>
-                                            
-                                            </div></div></div>
-                                            </div>
-                                            </li>
-                                            <li style="float:left;"><a href="http://get.adobe.com/de/flashplayer/" target="_blank">Download FlashPlayer</a></li>
-                                            
-                                            
-                                            <li><a href="index.php/passwort-fix.html">
-                                            <div class="ce_text block">
-                                            
-                                            <p>Passwort vergessen?</p>
-                                            
-                                            </div>
-                                            </a></li>
-                                            <li><a href="index.php/registrierung.html">
-                                            <div class="ce_text block">
-                                            
-                                            <p>Neu hier? - Jetzt beitreten</p>
-                                            
-                                            </div>
-                                            </a></li>
-                                            <li><a href="index.php/passwort-fix.html">
-                                            <div class="ce_lightboxtext block">
-                                            
-                                            <a href="#mb_9762" class="hyperlink_txt" rel="lightbox[lightbox4253 550 200]" title="">Infos für Schalker im Ausland</a>
-                                            <div id="mb_9762" style="display: none;"><div style="width:550px; height:200px; overflow:hidden; color:#ffffff; background-color:#000000;  "><div style="padding:5px 10px;;">
-                                            
-                                            <p><strong>S04tv im Ausland empfangen</strong></p>
-                                            
-                                            <p>• Ja, das ist möglich.<br />• Bitte klicke dazu auf dieses <a href="index.php/registrierung-ausland.html" title="registrierung-ausland">Registrierungsformular</a>. Alles weiteren Schritte werden dort auch erklärt.</p>
-                                            
-                                            </div></div></div>
-                                            </div>
-                                            </a></li>
-                                            <li><a href="index.php/eigene-daten.html"></a></li>
-                                            
-                                            </ul>
-                                            
-                                            <ul id="header-logo">
-                                            
-                                            <li><a href="index.php/startseite.html"><img src="tl_files/_system/_img/header-grafik.png" width="670" height="94" alt="" /></a></li>
-                                            
-                                            <li style="float:right;">
-                                            <!-- indexer::stop -->
-                                            <div class="mod_login two_column tableform login block">
-                                            
-                                            <form action="index.php/videos/items/110901_neu.html" id="tl_login" method="post">
-                                            <div class="formbody">
-                                            <input type="hidden" name="FORM_SUBMIT" value="tl_login" />
-                                            <table cellspacing="0" cellpadding="0" summary="">
-                                              <tr class="row_0 row_first">
-                                                <td class="col_0 col_first"><label for="username">Benutzername</label></td>
-                                                <td class="col_1 col_last"><input type="text" name="username" id="username" class="text" maxlength="64" value="" /></td>
-                                              </tr>
-                                              <tr class="row_1">
-                                                <td class="col_0 col_first"><label for="password">Passwort</label></td>
-                                                <td class="col_1 col_last"><input type="password" name="password" id="password" class="text password" maxlength="64" value="" /></td>
-                                              </tr>
-                                              <tr class="row_2">
-                                                <td class="col_0 col_first">&nbsp;</td>
-                                                <td class="col_1 col_last"><div class="checkbox_container"><input type="checkbox" name="autologin" id="autologin" value="1" class="checkbox" /> <label for="autologin">Angemeldet bleiben</label></div></td>
-                                              </tr>
-                                              <tr class="row_3 row_last">
-                                                <td class="col_0 col_first">&nbsp;</td>
-                                                <td class="col_1 col_last"><div class="submit_container"><input type="submit" class="submit" value="Anmelden" /></div></td>
-                                              </tr>
-                                            </table>
-                                            </div>
-                                            </form>
-                                            
-                                            </div>
-                                            <!-- indexer::continue -->
-                                            </li>
-                                            
-                                            </ul>
-                                            
-                                             
-                                            </div>
-                                            </div>
-                                            
-                                            <div id="container">
-                                            
-                                            <div id="main">
-                                            <div class="inside">
-                                            
-                                            <div class="mod_article block" id="bitte-anmelden">
-                                            
-                                            <div class="ce_text block">
-                                            
-                                            <h1>Sie sind leider nicht angemeldet</h1>
-                                            
-                                            <p>Sie müssen sich erst anmelden, um das Video ansehen zu können.<img src="tl_files/_system/_img/pfeil.png" width="500" height="50" alt="" /><br /><br />
-                                            
-                                            Sie haben noch keinen Benutzernamen? Dann registrieren Sie sich hier.</p>
-                                            
-                                            </div>
-                                            
-                                            </div>
-                                            
-                                            <div class="mod_article block" id="video-leser">
-                                            
-                                            </div>
-                                            
-                                            <!-- indexer::stop -->
-                                            <div class="mod_cataloglist block">
-                                            <span class="total">37</span>
-                                            
-                                            
-                                            
-                                            <div class="layout_full">
-                                            
-                                            <div class="item  first even">
-                                            <div class="field Bild">
-                                            	<div class="label">Bild zum Beitrag</div>
-                                            	<div class="value"><a href="index.php/videos/items/110901_neu.html" title="Die Details des Eintrags ansehen"><span class="image first even"><img src="system/html/neuer_schwarz_200-177877ce.jpg" alt="Neuer schwarz 200" width="180" height="99" /></span></a></div>
-                                            </div>
-                                            <div class="field Playbutton">
-                                            	<div class="label">Playbutton</div>
-                                            	<div class="value"><a href="index.php/videos/items/110901_neu.html" title="Die Details des Eintrags ansehen"><img src="tl_files/_system/_img/play.png" width="180" height="99" alt="" /></a></div>
-                                            </div>
-                                            <div class="field dachzeile">
-                                            	<div class="label">Kategorie</div>
-                                            	<div class="value">Beitrag</div>
-                                            </div>
-                                            <div class="field Datum">
-                                            	<div class="label">Datum</div>
-                                            	<div class="value">01.09.11</div>
-                                            </div>
-                                            <div class="field Headline">
-                                            	<div class="label">Überschrift</div>
-                                            	<div class="value">Wat Meinsse?</div>
-                                            </div>
-                                            <div class="field Text">
-                                            	<div class="label">Text</div>
-                                            	<div class="value"><p>Wat meinsse? ist die Rubrik wo die Fans das Sagen haben. DAS Thema in den Tagen vor dem nächsten Heimspiel: Wie empfangen wir den Torwart von Bayern Mümchen? Ob Vertreter&nbsp;der Fan-Organisationen Dachverband und Supporters oder der Fan in der Nordkurve - das komplette Spektrum der Meinungen reicht von "Stadionverbot" bis "Ignorieren".</p></div>
-                                            </div>
-                                            <div class="field untertitel">
-                                            	<div class="label">Untertitel</div>
-                                            	<div class="value">Die Rubrik der Fans</div>
-                                            </div>
-                                            <div class="field Beitragsart">
-                                            	<div class="label">Beitragsart</div>
-                                            	<div class="value">Vorbericht</div>
-                                            </div>
-                                            </div>
-                                            <div class="item  odd">
-                                            <div class="field Bild">
-                                            	<div class="label">Bild zum Beitrag</div>
-                                            	<div class="value"><a href="index.php/videos/items/110901_metze.html" title="Die Details des Eintrags ansehen"><span class="image first even"><img src="system/html/110901_metzelder_200-b491ade8.jpg" alt="Metzelder 200" width="180" height="99" /></span></a></div>
-                                            </div>
-                                            <div class="field Playbutton">
-                                            	<div class="label">Playbutton</div>
-                                            	<div class="value"><a href="index.php/videos/items/110901_metze.html" title="Die Details des Eintrags ansehen"><img src="tl_files/_system/_img/play.png" width="180" height="99" alt="" /></a></div>
-                                            </div>
-                                            <div class="field dachzeile">
-                                            	<div class="label">Kategorie</div>
-                                            	<div class="value">S04tv</div>
-                                            </div>
-                                            <div class="field Datum">
-                                            	<div class="label">Datum</div>
-                                            	<div class="value">01.09.11</div>
-                                            </div>
-                                            <div class="field Headline">
-                                            	<div class="label">Überschrift</div>
-                                            	<div class="value">Der Kampf um die Rückkehr</div>
-                                            </div>
-                                            <div class="field untertitel">
-                                            	<div class="label">Untertitel</div>
-                                            	<div class="value">Metzelder: Von wegen Pause</div>
-                                            </div>
-                                            <div class="field Beitragsart">
-                                            	<div class="label">Beitragsart</div>
-                                            	<div class="value"></div>
-                                            </div>
-                                            </div>
-                                            <div class="item  even">
-                                            <div class="field Bild">
-                                            	<div class="label">Bild zum Beitrag</div>
-                                            	<div class="value"><a href="index.php/videos/items/faehrmann.html" title="Die Details des Eintrags ansehen"><span class="image first even"><img src="system/html/110829_faehrmann_200-4015bf41.jpg" alt="Faehrmann 200" width="180" height="99" /></span></a></div>
-                                            </div>
-                                            <div class="field Playbutton">
-                                            	<div class="label">Playbutton</div>
-                                            	<div class="value"><a href="index.php/videos/items/faehrmann.html" title="Die Details des Eintrags ansehen"><img src="tl_files/_system/_img/play.png" width="180" height="99" alt="" /></a></div>
-                                            </div>
-                                            <div class="field dachzeile">
-                                            	<div class="label">Kategorie</div>
-                                            	<div class="value">Bundesliga</div>
-                                            </div>
-                                            <div class="field Datum">
-                                            	<div class="label">Datum</div>
-                                            	<div class="value">29.08.11</div>
-                                            </div>
-                                            <div class="field Headline">
-                                            	<div class="label">Überschrift</div>
-                                            	<div class="value">"Ralle" und die erste Null der Saison</div>
-                                            </div>
-                                            <div class="field Text">
-                                            	<div class="label">Text</div>
-                                            	<div class="value"><p>Ralf Fährmann ist kein Torwart der Marke "Wahnsinniger Einzeltäter" - auch deshalb bedankt er sich bei seinen Vorderleuten für eine stark verbesserte Defensivleistung gegen Gladbach:<br /><br />"Man hat gesehen, dass wir zusammen gewachsen sind!" Platz 2 und das Erreichen der Gruppenphase freut alle, aber es gibt keinen Grund zu überdrehen: "Wir sind klar im Kopf!"</p></div>
-                                            </div>
-                                            <div class="field untertitel">
-                                            	<div class="label">Untertitel</div>
-                                            	<div class="value">Nachbericht Gladbach</div>
-                                            </div>
-                                            <div class="field Beitragsart">
-                                            	<div class="label">Beitragsart</div>
-                                            	<div class="value">Interview</div>
-                                            </div>
-                                            </div>
-                                            <div class="item  odd">
-                                            <div class="field Bild">
-                                            	<div class="label">Bild zum Beitrag</div>
-                                            	<div class="value"><a href="index.php/videos/items/s04_bmg_baumi.html" title="Die Details des Eintrags ansehen"><span class="image first even"><img src="system/html/110828_baumjohann_200-f154b618.jpg" alt="Baumjohann 200" width="180" height="99" /></span></a></div>
-                                            </div>
-                                            <div class="field Playbutton">
-                                            	<div class="label">Playbutton</div>
-                                            	<div class="value"><a href="index.php/videos/items/s04_bmg_baumi.html" title="Die Details des Eintrags ansehen"><img src="tl_files/_system/_img/play.png" width="180" height="99" alt="" /></a></div>
-                                            </div>
-                                            <div class="field dachzeile">
-                                            	<div class="label">Kategorie</div>
-                                            	<div class="value">Bundesliga</div>
-                                            </div>
-                                            <div class="field Datum">
-                                            	<div class="label">Datum</div>
-                                            	<div class="value">28.08.11</div>
-                                            </div>
-                                            <div class="field Headline">
-                                            	<div class="label">Überschrift</div>
-                                            	<div class="value">Schalke 04 - M'gladbach</div>
-                                            </div>
-                                            <div class="field untertitel">
-                                            	<div class="label">Untertitel</div>
-                                            	<div class="value">Alexander Baumjohann über eine kuriose Szene</div>
-                                            </div>
-                                            <div class="field Beitragsart">
-                                            	<div class="label">Beitragsart</div>
-                                            	<div class="value">Interview</div>
-                                            </div>
-                                            </div>
-                                            <div class="item  even">
-                                            <div class="field Bild">
-                                            	<div class="label">Bild zum Beitrag</div>
-                                            	<div class="value"><a href="index.php/videos/items/mb_bmg.html" title="Die Details des Eintrags ansehen"><span class="image first even"><img src="system/html/119828_Bueskens_200-27b96bfd.jpg" alt="Bueskens 200" width="180" height="99" /></span></a></div>
-                                            </div>
-                                            <div class="field Playbutton">
-                                            	<div class="label">Playbutton</div>
-                                            	<div class="value"><a href="index.php/videos/items/mb_bmg.html" title="Die Details des Eintrags ansehen"><img src="tl_files/_system/_img/play.png" width="180" height="99" alt="" /></a></div>
-                                            </div>
-                                            <div class="field dachzeile">
-                                            	<div class="label">Kategorie</div>
-                                            	<div class="value">Bundesliga</div>
-                                            </div>
-                                            <div class="field Datum">
-                                            	<div class="label">Datum</div>
-                                            	<div class="value">28.08.11</div>
-                                            </div>
-                                            <div class="field Headline">
-                                            	<div class="label">Überschrift</div>
-                                            	<div class="value">Schalke 04 - M'gladbach</div>
-                                            </div>
-                                            <div class="field untertitel">
-                                            	<div class="label">Untertitel</div>
-                                            	<div class="value">Mike Büskens zum Spiel</div>
-                                            </div>
-                                            <div class="field Beitragsart">
-                                            	<div class="label">Beitragsart</div>
-                                            	<div class="value">Interview</div>
-                                            </div>
-                                            </div>
-                                            <div class="item  odd">
-                                            <div class="field Bild">
-                                            	<div class="label">Bild zum Beitrag</div>
-                                            	<div class="value"><a href="index.php/videos/items/s04_bmg_hl.html" title="Die Details des Eintrags ansehen"><span class="image first even"><img src="system/html/110828_bmg_200-2f9c0476.jpg" alt="Bmg 200" width="180" height="99" /></span></a></div>
-                                            </div>
-                                            <div class="field Playbutton">
-                                            	<div class="label">Playbutton</div>
-                                            	<div class="value"><a href="index.php/videos/items/s04_bmg_hl.html" title="Die Details des Eintrags ansehen"><img src="tl_files/_system/_img/play.png" width="180" height="99" alt="" /></a></div>
-                                            </div>
-                                            <div class="field dachzeile">
-                                            	<div class="label">Kategorie</div>
-                                            	<div class="value">Bundesliga</div>
-                                            </div>
-                                            <div class="field Datum">
-                                            	<div class="label">Datum</div>
-                                            	<div class="value">28.08.11</div>
-                                            </div>
-                                            <div class="field Headline">
-                                            	<div class="label">Überschrift</div>
-                                            	<div class="value">Schalke 04 - M'gladbach</div>
-                                            </div>
-                                            <div class="field Beitragsart">
-                                            	<div class="label">Beitragsart</div>
-                                            	<div class="value">Highlights</div>
-                                            </div>
-                                            </div>
-                                            <div class="item  even">
-                                            <div class="field Bild">
-                                            	<div class="label">Bild zum Beitrag</div>
-                                            	<div class="value"><a href="index.php/videos/items/S04_bmg_h2.html" title="Die Details des Eintrags ansehen"><span class="image first even"><img src="system/html/110828_bmg_200-2f9c0476.jpg" alt="Bmg 200" width="180" height="99" /></span></a></div>
-                                            </div>
-                                            <div class="field Playbutton">
-                                            	<div class="label">Playbutton</div>
-                                            	<div class="value"><a href="index.php/videos/items/S04_bmg_h2.html" title="Die Details des Eintrags ansehen"><img src="tl_files/_system/_img/play.png" width="180" height="99" alt="" /></a></div>
-                                            </div>
-                                            <div class="field dachzeile">
-                                            	<div class="label">Kategorie</div>
-                                            	<div class="value">Bundesliga</div>
-                                            </div>
-                                            <div class="field Datum">
-                                            	<div class="label">Datum</div>
-                                            	<div class="value">28.08.11</div>
-                                            </div>
-                                            <div class="field Headline">
-                                            	<div class="label">Überschrift</div>
-                                            	<div class="value">Schalke 04 - M'gladbach</div>
-                                            </div>
-                                            <div class="field Beitragsart">
-                                            	<div class="label">Beitragsart</div>
-                                            	<div class="value">2. Halbzeit</div>
-                                            </div>
-                                            </div>
-                                            <div class="item  odd">
-                                            <div class="field Bild">
-                                            	<div class="label">Bild zum Beitrag</div>
-                                            	<div class="value"><a href="index.php/videos/items/s04_bmg.html" title="Die Details des Eintrags ansehen"><span class="image first even"><img src="system/html/110828_bmg_200-2f9c0476.jpg" alt="Bmg 200" width="180" height="99" /></span></a></div>
-                                            </div>
-                                            <div class="field Playbutton">
-                                            	<div class="label">Playbutton</div>
-                                            	<div class="value"><a href="index.php/videos/items/s04_bmg.html" title="Die Details des Eintrags ansehen"><img src="tl_files/_system/_img/play.png" width="180" height="99" alt="" /></a></div>
-                                            </div>
-                                            <div class="field dachzeile">
-                                            	<div class="label">Kategorie</div>
-                                            	<div class="value">Bundesliga</div>
-                                            </div>
-                                            <div class="field Datum">
-                                            	<div class="label">Datum</div>
-                                            	<div class="value">28.08.11</div>
-                                            </div>
-                                            <div class="field Headline">
-                                            	<div class="label">Überschrift</div>
-                                            	<div class="value">Schalke 04 - M'gladbach</div>
-                                            </div>
-                                            <div class="field Beitragsart">
-                                            	<div class="label">Beitragsart</div>
-                                            	<div class="value">1. Halbzeit</div>
-                                            </div>
-                                            </div>
-                                            <div class="item  even">
-                                            <div class="field Bild">
-                                            	<div class="label">Bild zum Beitrag</div>
-                                            	<div class="value"><a href="index.php/videos/items/s04_hjk_pk.html" title="Die Details des Eintrags ansehen"><span class="image first even"><img src="system/html/110825_pk_200-b88cbc14.jpg" alt="Pk 200" width="180" height="99" /></span></a></div>
-                                            </div>
-                                            <div class="field Playbutton">
-                                            	<div class="label">Playbutton</div>
-                                            	<div class="value"><a href="index.php/videos/items/s04_hjk_pk.html" title="Die Details des Eintrags ansehen"><img src="tl_files/_system/_img/play.png" width="180" height="99" alt="" /></a></div>
-                                            </div>
-                                            <div class="field dachzeile">
-                                            	<div class="label">Kategorie</div>
-                                            	<div class="value">UEFA Europa League</div>
-                                            </div>
-                                            <div class="field Datum">
-                                            	<div class="label">Datum</div>
-                                            	<div class="value">26.08.11</div>
-                                            </div>
-                                            <div class="field Headline">
-                                            	<div class="label">Überschrift</div>
-                                            	<div class="value">Schalke 04 - HJK Helsinki</div>
-                                            </div>
-                                            <div class="field untertitel">
-                                            	<div class="label">Untertitel</div>
-                                            	<div class="value">PK nach dem Spiel</div>
-                                            </div>
-                                            <div class="field Beitragsart">
-                                            	<div class="label">Beitragsart</div>
-                                            	<div class="value">Pressekonferenz</div>
-                                            </div>
-                                            </div>
-                                            <div class="item  last odd">
-                                            <div class="field Bild">
-                                            	<div class="label">Bild zum Beitrag</div>
-                                            	<div class="value"><a href="index.php/videos/items/lh_hjk.html" title="Die Details des Eintrags ansehen"><span class="image first even"><img src="system/html/110825_Holtby_200-09371ba9.jpg" alt="Holtby 200" width="180" height="99" /></span></a></div>
-                                            </div>
-                                            <div class="field Playbutton">
-                                            	<div class="label">Playbutton</div>
-                                            	<div class="value"><a href="index.php/videos/items/lh_hjk.html" title="Die Details des Eintrags ansehen"><img src="tl_files/_system/_img/play.png" width="180" height="99" alt="" /></a></div>
-                                            </div>
-                                            <div class="field dachzeile">
-                                            	<div class="label">Kategorie</div>
-                                            	<div class="value">UEFA Europa League</div>
-                                            </div>
-                                            <div class="field Datum">
-                                            	<div class="label">Datum</div>
-                                            	<div class="value">25.08.11</div>
-                                            </div>
-                                            <div class="field Headline">
-                                            	<div class="label">Überschrift</div>
-                                            	<div class="value">Schalke 04 - HJK Helsinki</div>
-                                            </div>
-                                            <div class="field untertitel">
-                                            	<div class="label">Untertitel</div>
-                                            	<div class="value">Lewis Holtby zum Spiel</div>
-                                            </div>
-                                            <div class="field Beitragsart">
-                                            	<div class="label">Beitragsart</div>
-                                            	<div class="value">Interview</div>
-                                            </div>
-                                            </div>
-                                            </div>
-                                            
-                                            
-                                            <!-- indexer::stop -->
-                                            <div class="pagination block">
-                                            
-                                            <p>Seite 1 von 4</p>
-                                            <ul>
-                                              <li><span class="current">1</span></li>
-                                              <li><a href="index.php/videos/items/110901_neu.html?page=2" class="link" title="Gehe zu Seite 2">2</a></li>
-                                              <li><a href="index.php/videos/items/110901_neu.html?page=3" class="link" title="Gehe zu Seite 3">3</a></li>
-                                              <li><a href="index.php/videos/items/110901_neu.html?page=4" class="link" title="Gehe zu Seite 4">4</a></li> 
-                                              <li><a href="index.php/videos/items/110901_neu.html?page=2" class="next" title="Gehe zu Seite 2">Vorwärts</a></li>
-                                              <li><a href="index.php/videos/items/110901_neu.html?page=4" class="last" title="Gehe zu Seite 4">Ende &#187;</a></li>
-                                            </ul>
-                                            
-                                            </div>
-                                            <!-- indexer::continue -->
-                                            
-                                            </div>
-                                            <!-- indexer::continue -->
-                                             
-                                            </div>
-                                             
-                                            <div id="clear"></div>
-                                            </div>
-                                            
-                                            </div>
-                                            
-                                            <div id="footer">
-                                            <div class="inside">
-                                            
-                                            <ul>
-                                            
-                                            <li><a href="index.php/faq.html">FAQ</a></li>
-                                            <li>
-                                            <div class="ce_lightboxtext block">
-                                            
-                                            <a href="#mb_4743" class="hyperlink_txt" rel="lightbox[lightbox1827 400 200]" title="">Preise</a>
-                                            <div id="mb_4743" style="display: none;"><div style="width:400px; height:200px; overflow:hidden; color:#ffffff; background-color:#000000;  "><div style="padding:5px 10px;;">
-                                            
-                                            <p><strong>S04tv Abo Preise</strong></p>
-                                            
-                                            <p>• <span style="text-decoration: underline;">6 Monate</span>: 23,04 Euro<br />• <span style="text-decoration: underline;">12 Monate</span>: 39,04 Euro<br /><br />
-                                            inkl. MwSt.</p>
-                                            
-                                            </div></div></div>
-                                            </div>
-                                            </li>
-                                            <li>
-                                            <div class="ce_lightboxmodule block">
-                                            
-                                            <a href="#mb_7051" class="hyperlink_txt" rel="lightbox[lightbox6114 400 400]" title="">Feedback</a>
-                                            <div id="mb_7051" style="display: none;"><div style="width:400px; height:400px; overflow:hidden; color:#ffffff; background-color:#000000;  "><div style="padding:5px 10px;;">
-                                            
-                                            
-                                            <!-- indexer::stop -->
-                                            <div class="ce_form tableform block">
-                                            
-                                            <form action="index.php/videos/items/110901_neu.html" id="f5" method="post" enctype="application/x-www-form-urlencoded">
-                                            <div class="formbody">
-                                            <input type="hidden" name="FORM_SUBMIT" value="auto_form_5" />
-                                            <input type="hidden" name="MAX_FILE_SIZE" value="2048000" />
-                                            <table cellspacing="0" cellpadding="0" summary="Form fields">
-                                              <tr class="row_0 row_first even">
-                                                <td class="col_0 col_first"><label for="ctrl_13" class="mandatory"><span class="invisible">Pflichtfeld</span> Anrede<span class="mandatory">*</span></label></td>
-                                                <td class="col_1 col_last"><div id="ctrl_13" class="radio_container mandatory"><input type="hidden" name="Anrede" value="" /><span><input type="radio" name="Anrede" id="opt_13_0" class="radio" value="Herr" /> <label id="lbl_13_0" for="opt_13_0">Herr</label></span><span><input type="radio" name="Anrede" id="opt_13_1" class="radio" value="Frau" /> <label id="lbl_13_1" for="opt_13_1">Frau</label></span></div></td>
-                                              </tr>
-                                              <tr class="row_1 odd">
-                                                <td class="col_0 col_first"><label for="ctrl_14" class="mandatory"><span class="invisible">Pflichtfeld</span> Vorname<span class="mandatory">*</span></label></td>
-                                                <td class="col_1 col_last"><input type="text" name="Vorname" id="ctrl_14" class="text mandatory" value="" /></td>
-                                              </tr>
-                                              <tr class="row_2 even">
-                                                <td class="col_0 col_first"><label for="ctrl_15" class="mandatory"><span class="invisible">Pflichtfeld</span> Nachname<span class="mandatory">*</span></label></td>
-                                                <td class="col_1 col_last"><input type="text" name="Nachname" id="ctrl_15" class="text mandatory" value="" /></td>
-                                              </tr>
-                                              <tr class="row_3 odd">
-                                                <td class="col_0 col_first"><label for="ctrl_16" class="mandatory"><span class="invisible">Pflichtfeld</span> Email<span class="mandatory">*</span></label></td>
-                                                <td class="col_1 col_last"><input type="text" name="Email" id="ctrl_16" class="text mandatory" value="" /></td>
-                                              </tr>
-                                              <tr class="row_4 even">
-                                                <td class="col_0 col_first"><label for="ctrl_17" class="mandatory"><span class="invisible">Pflichtfeld</span> Nachricht<span class="mandatory">*</span></label></td>
-                                                <td class="col_1 col_last"><textarea name="Nachricht" id="ctrl_17" class="textarea mandatory" rows="6" cols="24"></textarea></td>
-                                              </tr>
-                                              <tr class="row_5 row_last odd">
-                                                <td class="col_0 col_first">&nbsp;</td>
-                                                <td class="col_1 col_last"><div class="submit_container"><input type="submit" id="ctrl_19" class="submit" value="Nachricht senden" /></div></td>
-                                              </tr>
-                                            </table>
-                                            </div>
-                                            </form>
-                                            
-                                            </div>
-                                            <!-- indexer::continue -->
-                                            
-                                            </div></div></div>
-                                            </div>
-                                            </li>
-                                            <li><a href="index.php/agb.html">AGB</a></li>
-                                            <li>
-                                            <div class="ce_lightboxtext block">
-                                            
-                                            <a href="#mb_5063" class="hyperlink_txt" rel="lightbox[lightbox6495 600 600]" title="">Datenschutz</a>
-                                            <div id="mb_5063" style="display: none;"><div style="width:600px; height:600px; overflow:auto; color:#ffffff; background-color:#000000;  "><div style="padding:5px 10px;;">
-                                            
-                                            <p style="text-align: left;"><span style="font-size: 11px;"><strong>Datenschutz</strong></span></p>
-                                            
-                                            <p style="text-align: left;"><span style="font-size: 11px;">Diese Website wird vom FC Gelsenkirchen-Schalke 04 e.V. betrieben. Der Schutz Ihrer personenbezogenen Daten ist uns sehr wichtig.</span></p>
-                                            
-                                            <p style="text-align: left;"><br /><span style="font-size: 11px;">Wir nutzen diese nur im Rahmen der gesetzlichen Bestimmungen, z.B. zur Durchführung des Vertrages oder, soweit Sie Ihr&nbsp;ausdrückliches Einverständnis zur Erstellung von Nutzerprofilen erteilt haben, um Sie per E-Mail über Waren und Dienstleistungen zu informieren, die Ihren bestellten Waren oder Dienstleistungen ähnlich sind.</span><span style="font-size: 11px;">&nbsp;</span><span style="font-size: 11px;">Zur Bonitätsprüfung und -überwachung tauschen wir in berechtigten Fällen Adress- und Bonitätsdaten mit Kredit-Dienstleistungsunternehmen aus.</span><span style="font-size: 11px;">&nbsp;</span><span style="font-size: 11px;">Sie können einer Nutzung oder Übermittlung ihrer Daten zu werblichen Zwecken oder Zwecken der Markt- und Meinungsforschung jederzeit bei uns unter der E-Mail-Adresse &#83;&#48;&#52;&#116;&#118;&#x40;&#x73;&#99;&#104;&#x61;&#x6C;&#107;&#101;&#x30;&#52;&#x2E;&#x64;&#101; widersprechen.</span><span style="font-size: 11px;">&nbsp;</span><span style="font-size: 11px;">Über dieses Widerspruchsrecht klären wir Sie auch bei jeder werblichen Ansprache erneut auf.</span><span style="font-size: 11px;">&nbsp;</span><span style="font-size: 11px;">Das Gesetz gestattet darüber hinaus die Verwendung pseudonymisierter Nutzungsdaten zur bedarfsgerechten Gestaltung unserer Services oder zu Zwecken der Marktforschung. Auch dieser Verwendung können Sie wie angegeben widersprechen.</span><span style="font-size: 11px;">&nbsp;</span><span style="font-size: 11px;">Ein Teil unserer Dienste erfordert es, dass wir sog. Cookies einsetzen.</span><span style="font-size: 11px;">&nbsp;</span><span style="font-size: 11px;">Cookies sind kleine Datenmengen, die Ihr Internetbrowser auf Ihrem Rechner speichert. In Cookies können Informationen über Ihren Besuch auf unserer Website gespeichert werden.</span><span style="font-size: 11px;">&nbsp;</span><span style="font-size: 11px;">Nur für die aktive Teilnahme an bestimmten Angeboten (z.B. Ticketing, Online-Shop) sind Cookies erforderlich.</span><br /><span style="font-size: 11px;">Die meisten Browser sind standardmäßig so eingestellt, dass sie Cookies akzeptieren, aber Sie können Ihren Browser so umkonfigurieren, dass er Cookies ablehnt oder vorher eine Bestätigung von Ihnen erfragt.</span><span style="font-size: 11px;">&nbsp;</span><span style="font-size: 11px;">Wenn Sie Cookies ablehnen, kann dies allerdings zur Folge haben, dass ein Teil unserer Dienste nicht verfügbar ist.</span><span style="font-size: 11px;">&nbsp;</span><span style="font-size: 11px;">Bitte haben Sie Verständnis dafür, dass unsere Dienste nicht anonym verwendet werden können.</span><span style="font-size: 11px;">&nbsp;</span><span style="font-size: 11px;">Soweit es sich um kostenpflichtige Dienste handelt ist schon für die Zwecke der Abrechnung der Klarname erforderlich.</span><span style="font-size: 11px;">&nbsp;</span><span style="font-size: 11px;">Bei kostenlosen Diensten können wir nur so sicherstellen, dass unsere Nutzungsbedingungen eingehalten werden.</span></p>
-                                            
-                                            </div></div></div>
-                                            </div>
-                                            </li>
-                                            <li><a href="index.php/rechtliches.html">Rechtliche Hinweise</a></li>
-                                            <li>
-                                            <div class="ce_lightboxtext block">
-                                            
-                                            <a href="#mb_8975" class="hyperlink_txt" rel="lightbox[lightbox9480 500 520]" title="">Impressum</a>
-                                            <div id="mb_8975" style="display: none;"><div style="width:500px; height:520px; overflow:hidden; color:#ffffff; background-color:#000000;  "><div style="padding:5px 10px;;">
-                                            
-                                            <p><strong>Anbieter</strong><br />FC Schalke 04 e.V.<br />Ernst-Kuzorra-Weg 1<br />45891 Gelsenkirchen<br /><br />
-                                            Telefon: 0209/36180<br />Fax: 0209/3618109<br />&#115;&#x30;&#52;&#116;&#x76;&#x40;&#115;&#x63;&#104;&#x61;&#x6C;&#107;&#x65;&#x30;&#x34;&#46;&#x64;&#x65;<br /><br />
-                                            <strong>Vertretungsberechtigter Vorstand</strong><br />Peter Peters, Horst Heldt<br />Registergericht: Amtsgericht Gelsenkirchen<br /><br />
-                                            Vereinsregisternummer: VR 822<br />Umsatzsteuer-ID: DE 125010647<br /><br />
-                                            <strong>Verantwortlicher im Sinne des Telemediengesetzes bzw. des Staatsvertrages für Rundfunk und Medien:</strong><br />Thomas Spiegel<br />Abteilung Presse + PR<br />Ernst-Kuzorra-Weg 1<br />45891 Gelsenkirchen<br /><br />
-                                            Telefon: 0209/36180<br />Fax: 0209/3618109</p>
-                                            
-                                            </div></div></div>
-                                            </div>
-                                            </li>
-                                            
-                                            
-                                            
-                                            </ul>
-                                             
-                                            </div>
-                                            </div>
-                                            
-                                            <!-- indexer::stop -->
-                                            <img src="https://www.s04tv.de/cron.php" alt="" class="invisible" />
-                                            <!-- indexer::continue -->
-                                            
-                                            </div>
-                                            
-                                            <script type="text/javascript" src="plugins/mediabox/js/mediabox.js?1.2.5"></script>
-                                            <script type="text/javascript">
-                                            <!--//--><![CDATA[//><!--
-                                            Mediabox.scanPage = function() {
-                                              var links = $$("a").filter(function(el) {
-                                                return el.rel && el.rel.test(/^lightbox/i);
-                                              });
-                                              $$(links).mediabox({/* Put custom options here */}, null, function(el) {
-                                                var rel0 = this.rel.replace(/[[]|]/gi," ");
-                                                var relsize = rel0.split(" ");
-                                                return (this == el) || ((this.rel.length > 8) && el.rel.match(relsize[1]));
-                                              });
-                                            };
-                                            window.addEvent("domready", Mediabox.scanPage);
-                                            //--><!]]>
-                                            </script>
-                                            
-                                            </body>
-                                            </html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
+<head>
+<!--
+
+	This website is powered by Contao Open Source CMS :: Licensed under GNU/LGPL
+	Copyright Â©2005-2011 by Leo Feyer :: Extensions are copyright of their respective owners
+	Visit the project website at http://www.contao.org for more information
+
+//-->
+<base href="https://www.s04tv.de/"></base>
+<title>Kostenlose S04tv Videos - S04tv</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+<meta name="robots" content="index,follow" />
+<style type="text/css" media="screen">
+<!--/*--><![CDATA[/*><!--*/
+#wrapper { width:960px; margin:0 auto; }
+#header { height:195px; }
+#footer { height:50px; }
+/*]]>*/-->
+</style>
+<link rel="stylesheet" href="system/contao.css" type="text/css" media="screen" />
+<!--[if lte IE 7]><link rel="stylesheet" href="system/iefixes.css" type="text/css" media="screen" /><![endif]-->
+<link rel="stylesheet" href="plugins/slideshow2/css/slideshow.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="plugins/mediabox/css/mediabox.css?1.2.5" type="text/css" media="screen" />
+<link rel="stylesheet" href="s04tv_css.css?1313520980" type="text/css" media="all" />
+<link rel="stylesheet" href="footer.css?1313520162" type="text/css" media="all" />
+<link rel="stylesheet" href="video-liste.css?1313660576" type="text/css" media="all" />
+<link rel="stylesheet" href="header.css?1313521720" type="text/css" media="all" />
+<link rel="stylesheet" href="video-leser.css?1312188624" type="text/css" media="all" />
+<link rel="stylesheet" href="video-filter.css?1312330697" type="text/css" media="all" />
+<!--[if IE]><link rel="stylesheet" href="ie.css?1312897029" type="text/css" media="all" /><![endif]-->
+<script type="text/javascript" src="plugins/slideshow2/mootools/mootools-core.js"></script>
+<script type="text/javascript" src="plugins/slideshow2/mootools/mootools-more.js"></script>
+<script type="text/javascript" src="plugins/jquery/js/jquery-1.6.1.min.js"></script>
+<script type="text/javascript" src="plugins/slideshow2/js/slideshow.js"></script>
+
+<style type="text/css" media="screen">
+<!--/*--><![CDATA[/*><!--*/
+
+#show_1 
+{
+	width:960px;	
+	height:250px;
+}
+
+#show_1 .slideshow-images 
+{
+	width:960px;
+	height:250px;
+}
+
+/* Captions - Untertitel */
+#show_1 .slideshow-captions 
+{
+	bottom:0px;
+}
+#show_1 .slideshow-captions-visible 
+{
+	height:30px;
+	opacity: .7;
+}
+
+
+/*]]>*/-->
+</style>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+
+window.addEvent('domready',function()
+{
+	var images_1 = {'tl_files/Bilder/Slideshow/nordkurve_960.jpg':{caption:''},'tl_files/Bilder/Slideshow/raul_gladbach_960.jpg':{caption:''},'tl_files/Bilder/Slideshow/bueskens_co_com_960.jpg':{caption:''},'tl_files/Bilder/Slideshow/draxler_960.jpg':{caption:''},'tl_files/Bilder/Slideshow/mannschaft_960.jpg':{caption:''}};
+
+	var show_1 = new Slideshow('show_1', images_1, 
+	{ 
+		width: 960,
+		height: 250,
+		delay: 5500,
+		duration: 1000,
+				loop: true,
+		paused: false,
+		random: false,
+		controller: false,
+		fast: 2 | OnStart,
+		thumbnails: false,
+		captions: true	});
+});
+
+//--><!]]>
+</script>
+<script src="tl_files/_system/_js/swfobject.js" type="text/javascript" charset="utf-8"></script>
+<script src="tl_files/_system/_js/nonverblaster.js" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/javascript">
+<!--
+if (screen.width <= 499) {
+document.location = "http://www.s04tv.de/index.php/mobile-login.html";
+}
+//-->
+</script>
+
+<script type="text/javascript">
+$(function(){
+    $("a").hover(function(){
+        $(this).stop().attr('title', '');},
+        function(){$(this).stop().attr();
+        });
+});
+</script>
+<link rel="icon" href="http://www.s04tv.de/favicon.ico" type="image/x-icon">
+
+<script>
+$(document).ready(function() {
+    //Tooltips
+    $(".mod_cataloglist .item").hover(function(){
+        tip = $(this).find('.Text');
+        tip.show(); //Show tooltip
+    }, function() {
+        tip.hide(); //Hide tooltip
+    }).mousemove(function(e) {
+        var mousex = e.pageX - 320 ; //Get X coodrinates
+        var mousey = e.pageY - 130 ; //Get Y coordinates
+        var tipWidth = tip.width(); //Find width of tooltip
+        var tipHeight = tip.height(); //Find height of tooltip
+
+        //Distance of element from the right edge of viewport
+        var tipVisX = $(window).width() - (mousex + tipWidth);
+        //Distance of element from the bottom of viewport
+        var tipVisY = $(window).height() - (mousey + tipHeight);
+
+        if ( tipVisX < 20 ) { //If tooltip exceeds the X coordinate of viewport
+            mousex = e.pageX - tipWidth - 20;
+        } if ( tipVisY < 20 ) { //If tooltip exceeds the Y coordinate of viewport
+            mousey = e.pageY - tipHeight - 20;
+        }
+       
+    });
+});
+</script>
+</head>
+
+<body id="top">
+<div id="wrapper">
+
+<div id="header">
+<div class="inside">
+
+<ul id="header-top">
+
+
+<li style="float:left;"><a href="index.php/passwort-fix.html">
+<div class="ce_lightboxtext block">
+
+<a href="#mb_3440" class="hyperlink_txt" rel="lightbox[lightbox6023 550 200]" title="">Infos fÃ¼r Schalker im Ausland</a>
+<div id="mb_3440" style="display: none;"><div style="width:550px; height:200px; overflow:hidden; color:#ffffff; background-color:#000000;  "><div style="padding:5px 10px;;">
+
+<p><strong>S04tv im Ausland empfangen</strong></p>
+
+<p>â€¢ Ja, das ist mÃ¶glich.<br />â€¢ Bitte klicke dazu auf dieses <a href="index.php/registrierung-ausland.html" title="registrierung-ausland">Registrierungsformular</a>. Alles weiteren Schritte werden dort auch erklÃ¤rt.</p>
+
+</div></div></div>
+</div>
+</a></li>
+
+</ul>
+
+<ul id="header-logo">
+
+<li><a href="index.php/startseite.html"><img src="tl_files/_system/_img/header-grafik.png" width="670" height="94" alt="" /></a></li>
+
+<li style="float:right;">
+<!-- indexer::stop -->
+<div class="mod_login two_column tableform login block">
+
+<form action="index.php/s04tv-kostenlos.html" id="tl_login" method="post">
+<div class="formbody">
+<input type="hidden" name="FORM_SUBMIT" value="tl_login" />
+<table cellspacing="0" cellpadding="0" summary="">
+  <tr class="row_0 row_first">
+    <td class="col_0 col_first"><label for="username">Benutzername</label></td>
+    <td class="col_1 col_last"><input type="text" name="username" id="username" class="text" maxlength="64" value="" /></td>
+  </tr>
+  <tr class="row_1">
+    <td class="col_0 col_first"><label for="password">Passwort</label></td>
+    <td class="col_1 col_last"><input type="password" name="password" id="password" class="text password" maxlength="64" value="" /></td>
+  </tr>
+  <tr class="row_2">
+    <td class="col_0 col_first">&nbsp;</td>
+    <td class="col_1 col_last"><div class="checkbox_container"><input type="checkbox" name="autologin" id="autologin" value="1" class="checkbox" /> <label for="autologin">Angemeldet bleiben</label></div></td>
+  </tr>
+  <tr class="row_3 row_last">
+    <td class="col_0 col_first">&nbsp;</td>
+    <td class="col_1 col_last"><div class="submit_container"><input type="submit" class="submit" value="Anmelden" /></div></td>
+  </tr>
+</table>
+</div>
+</form>
+
+</div>
+<!-- indexer::continue -->
+</li>
+
+</ul>
+
+
+<ul id="header-top2">
+
+<li style="float:left;"><a href="index.php/startseite.html">
+<div class="ce_text block">
+
+<p>alle S04tv Videos</p>
+
+</div>
+</a></li>
+<li style="float:left;"><a href="index.php/s04tv-kostenlos.html">
+<div class="ce_text block">
+
+<p>S04tv kostenlos testen</p>
+
+</div>
+</a></li>
+
+
+
+<li><a href="index.php/eigene-daten.html"></a></li>
+<li><a href="index.php/passwort-fix.html">
+<div class="ce_text block">
+
+<p>Passwort vergessen?</p>
+
+</div>
+</a></li>
+<li><a href="index.php/registrierung.html">
+<div class="ce_text block">
+
+<p>Registrieren</p>
+
+</div>
+</a></li>
+
+</ul>
+ 
+</div>
+</div>
+
+<div id="container">
+
+<div id="main">
+<div class="inside">
+
+<div class="mod_article block" id="systemvoraussetzungen-lightbox">
+
+<div id="mb_6157" style="display: none;"><div style="width:650px; height:250px; overflow:hidden; color:#ffffff; background-color:#000000;  "><div style="padding:5px 10px;;">
+
+<p><span style="color: #ff0000;"><strong>Systemvoraussetzungen</strong></span></p>
+
+<p>â€¢ <span style="text-decoration: underline;">Betriebssystem</span>: Microsoft Windows 7 / Vista / XP / Mac OS X<br />â€¢ <span style="text-decoration: underline;">Prozessor</span>: Intel Pentium 4 3,0 GHz, Dual-Core-CPU mit 2,0 GHz oder AMD Athlon 64 X2 mit 2,0 GHz<br />â€¢ <span style="text-decoration: underline;">Arbeitsspeicher</span>: 1 GB bei Windows XP, 2 GiByte bei Windows Vista, 7 und Mac OS X<br />â€¢ <span style="text-decoration: underline;">Grafikkarte</span>: 128 MB VRAM oder mehr, DirectX 9-kompatibel<br />â€¢ <span style="text-decoration: underline;">Audio</span>: DirectX 9.0c-kompatibel<br />â€¢ <span style="text-decoration: underline;">Browser</span>: Internet Explorer 8+ / Firefox 3.6+ / Safari 4+ / Chrome 10+<br />â€¢ <span style="text-decoration: underline;">Plugin</span>: Adobe Flash Player - <span style="color: #ffffff;"><a onclick="window.open(this.href); return false;" href="http://get.adobe.com/de/flashplayer/">kostenloser Download</a></span><br />â€¢ <span style="text-decoration: underline;">JavaScript</span>: aktiviert in Internet Explorer &amp; Firefox - (fÃ¼r Safari optional)<br />â€¢ <span style="text-decoration: underline;">Internetgeschwindigkeit</span>: 2Mbit/s (DSL 2000)</p>
+
+</div></div></div>
+
+<script>
+window.onload = function () {
+  setTimeout("Mediabox.open('#mb_6157', '', '650 250')",300);
+};
+</script>
+
+</div>
+
+<div class="mod_article block" id="slideshow-153">
+<div class="ce_slideshow2 block">
+
+<div id="show_1" class="slideshow">
+	<img src="tl_files/Bilder/Slideshow/nordkurve_960.jpg" width="960" height="250" alt="" />
+</div>
+
+</div>
+</div>
+
+<!-- indexer::stop -->
+<div class="mod_cataloglist block">
+<span class="total">1</span>
+
+
+
+<div class="layout_full">
+
+<div class="item  first last even">
+<div class="field Bild">
+	<div class="label">Bild zum Beitrag</div>
+	<div class="value"><a href="index.php/videos-kostenlos/items/pokal_serie_23.html" title="Die Details des Eintrags ansehen"><span class="image first even"><img src="system/html/110607_pokal_highlights2_200-2e0ae262.jpg" alt="Pokal highlights2 200" width="180" height="99" /></span></a></div>
+</div>
+<div class="field Playbutton">
+	<div class="label">Playbutton</div>
+	<div class="value"><a href="index.php/videos-kostenlos/items/pokal_serie_23.html" title="Die Details des Eintrags ansehen"><img src="tl_files/_system/_img/play.png" width="180" height="99" alt="" /></a></div>
+</div>
+<div class="field dachzeile">
+	<div class="label">Kategorie</div>
+	<div class="value">DFB-Pokal</div>
+</div>
+<div class="field Datum">
+	<div class="label">Datum</div>
+	<div class="value">21.07.11</div>
+</div>
+<div class="field Headline">
+	<div class="label">Ãœberschrift</div>
+	<div class="value">Pokal-Serie</div>
+</div>
+<div class="field Text">
+	<div class="label">Text</div>
+	<div class="value"><p><span>Von A(alen) nach B(erlin)</span></p>
+<p><span>Zusammen rund eine halbe Stunde Highlights aus dem Pokalwettbewerb 2010/11</span></p></div>
+</div>
+<div class="field untertitel">
+	<div class="label">Untertitel</div>
+	<div class="value">NÃ¼rnberg und MÃ¼nchen: Magische Momente</div>
+</div>
+<div class="field Beitragsart">
+	<div class="label">Beitragsart</div>
+	<div class="value">Teil 2/3</div>
+</div>
+</div>
+</div>
+
+
+</div>
+<!-- indexer::continue -->
+ 
+</div>
+ 
+<div id="clear"></div>
+</div>
+
+</div>
+
+<div id="footer">
+<div class="inside">
+
+<ul>
+
+<li><a href="index.php/faq.html">FAQ</a></li>
+<li style="float:left;">
+<div class="ce_lightboxtext block">
+
+<a href="#mb_9934" class="hyperlink_txt" rel="lightbox[lightbox4344 640 280]" title="">Systemvoraussetzungen</a>
+<div id="mb_9934" style="display: none;"><div style="width:640px; height:280px; overflow:hidden; color:#ffffff; background-color:#000000;  "><div style="padding:5px 10px;;">
+
+<p><strong>Systemvoraussetzungen</strong></p>
+
+<p>â€¢ <span style="text-decoration: underline;">Betriebssystem</span>: Microsoft Windows 7 / Vista / XP / Mac OS X<br />â€¢ <span style="text-decoration: underline;">Prozessor</span>: Intel Pentium 4 3,0 GHz, Dual-Core-CPU mit 2,0 GHz oder AMD Athlon 64 X2 mit 2,0 GHz<br />â€¢ <span style="text-decoration: underline;">Arbeitsspeicher</span>: 1 GB bei Windows XP, 2 GiByte bei Windows Vista, 7 und Mac OS X<br />â€¢ <span style="text-decoration: underline;">Grafikkarte</span>: 128 MB VRAM oder mehr, DirectX 9-kompatibel<br />â€¢ <span style="text-decoration: underline;">Audio</span>: DirectX 9.0c-kompatibel<br />â€¢ <span style="text-decoration: underline;">Browser</span>: Internet Explorer 8+ / Firefox 3.6+ / Safari 4+ / Chrome 10+<br />â€¢ <span style="text-decoration: underline;">Plugin</span>: Adobe Flash Player<br />â€¢ <span style="text-decoration: underline;">JavaScript</span>: aktiviert in Internet Explorer &amp; Firefox - (fÃ¼r Safari optional)<br />â€¢ <span style="text-decoration: underline;">Internetgeschwindigkeit</span>: 2Mbit/s (DSL 2000)</p>
+
+</div></div></div>
+</div>
+</li>
+<li style="float:left;"><a href="http://get.adobe.com/de/flashplayer/" target="_blank">Download FlashPlayer</a></li>
+
+<li>
+<div class="ce_lightboxtext block">
+
+<a href="#mb_1212" class="hyperlink_txt" rel="lightbox[lightbox5443 400 200]" title="">Preise</a>
+<div id="mb_1212" style="display: none;"><div style="width:400px; height:200px; overflow:hidden; color:#ffffff; background-color:#000000;  "><div style="padding:5px 10px;;">
+
+<p><strong>S04tv Abo Preise</strong></p>
+
+<p>â€¢ <span style="text-decoration: underline;">6 Monate</span>: 23,04 Euro<br />â€¢ <span style="text-decoration: underline;">12 Monate</span>: 39,04 Euro<br /><br />
+inkl. MwSt.</p>
+
+</div></div></div>
+</div>
+</li>
+<li>
+<div class="ce_lightboxmodule block">
+
+<a href="#mb_7630" class="hyperlink_txt" rel="lightbox[lightbox6681 400 400]" title="">Feedback</a>
+<div id="mb_7630" style="display: none;"><div style="width:400px; height:400px; overflow:hidden; color:#ffffff; background-color:#000000;  "><div style="padding:5px 10px;;">
+
+
+<!-- indexer::stop -->
+<div class="ce_form tableform block">
+
+<form action="index.php/s04tv-kostenlos.html" id="f5" method="post" enctype="application/x-www-form-urlencoded">
+<div class="formbody">
+<input type="hidden" name="FORM_SUBMIT" value="auto_form_5" />
+<input type="hidden" name="MAX_FILE_SIZE" value="2048000" />
+<table cellspacing="0" cellpadding="0" summary="Form fields">
+  <tr class="row_0 row_first even">
+    <td class="col_0 col_first"><label for="ctrl_13" class="mandatory"><span class="invisible">Pflichtfeld</span> Anrede<span class="mandatory">*</span></label></td>
+    <td class="col_1 col_last"><div id="ctrl_13" class="radio_container mandatory"><input type="hidden" name="Anrede" value="" /><span><input type="radio" name="Anrede" id="opt_13_0" class="radio" value="Herr" /> <label id="lbl_13_0" for="opt_13_0">Herr</label></span><span><input type="radio" name="Anrede" id="opt_13_1" class="radio" value="Frau" /> <label id="lbl_13_1" for="opt_13_1">Frau</label></span></div></td>
+  </tr>
+  <tr class="row_1 odd">
+    <td class="col_0 col_first"><label for="ctrl_14" class="mandatory"><span class="invisible">Pflichtfeld</span> Vorname<span class="mandatory">*</span></label></td>
+    <td class="col_1 col_last"><input type="text" name="Vorname" id="ctrl_14" class="text mandatory" value="" /></td>
+  </tr>
+  <tr class="row_2 even">
+    <td class="col_0 col_first"><label for="ctrl_15" class="mandatory"><span class="invisible">Pflichtfeld</span> Nachname<span class="mandatory">*</span></label></td>
+    <td class="col_1 col_last"><input type="text" name="Nachname" id="ctrl_15" class="text mandatory" value="" /></td>
+  </tr>
+  <tr class="row_3 odd">
+    <td class="col_0 col_first"><label for="ctrl_16" class="mandatory"><span class="invisible">Pflichtfeld</span> Email<span class="mandatory">*</span></label></td>
+    <td class="col_1 col_last"><input type="text" name="Email" id="ctrl_16" class="text mandatory" value="" /></td>
+  </tr>
+  <tr class="row_4 even">
+    <td class="col_0 col_first"><label for="ctrl_113">Telefon</label></td>
+    <td class="col_1 col_last"><input type="text" name="Telefon" id="ctrl_113" class="text" value="" /></td>
+  </tr>
+  <tr class="row_5 odd">
+    <td class="col_0 col_first"><label for="ctrl_17" class="mandatory"><span class="invisible">Pflichtfeld</span> Nachricht<span class="mandatory">*</span></label></td>
+    <td class="col_1 col_last"><textarea name="Nachricht" id="ctrl_17" class="textarea mandatory" rows="6" cols="24"></textarea></td>
+  </tr>
+  <tr class="row_6 row_last even">
+    <td class="col_0 col_first">&nbsp;</td>
+    <td class="col_1 col_last"><div class="submit_container"><input type="submit" id="ctrl_19" class="submit" value="Nachricht senden" /></div></td>
+  </tr>
+</table>
+</div>
+</form>
+
+</div>
+<!-- indexer::continue -->
+
+</div></div></div>
+</div>
+</li>
+<li><a href="index.php/agb.html">AGB</a></li>
+<li>
+<div class="ce_lightboxtext block">
+
+<a href="#mb_5471" class="hyperlink_txt" rel="lightbox[lightbox1627 600 600]" title="">Datenschutz</a>
+<div id="mb_5471" style="display: none;"><div style="width:600px; height:600px; overflow:auto; color:#ffffff; background-color:#000000;  "><div style="padding:5px 10px;;">
+
+<p style="text-align: left;"><span style="font-size: 11px;"><strong>Datenschutz</strong></span></p>
+
+<p style="text-align: left;"><span style="font-size: 11px;">Diese Website wird vom FC Gelsenkirchen-Schalke 04 e.V. betrieben. Der Schutz Ihrer personenbezogenen Daten ist uns sehr wichtig.</span></p>
+
+<p style="text-align: left;"><br /><span style="font-size: 11px;">Wir nutzen diese nur im Rahmen der gesetzlichen Bestimmungen, z.B. zur DurchfÃ¼hrung des Vertrages oder, soweit Sie Ihr&nbsp;ausdrÃ¼ckliches EinverstÃ¤ndnis zur Erstellung von Nutzerprofilen erteilt haben, um Sie per E-Mail Ã¼ber Waren und Dienstleistungen zu informieren, die Ihren bestellten Waren oder Dienstleistungen Ã¤hnlich sind.</span><span style="font-size: 11px;">&nbsp;</span><span style="font-size: 11px;">Zur BonitÃ¤tsprÃ¼fung und -Ã¼berwachung tauschen wir in berechtigten FÃ¤llen Adress- und BonitÃ¤tsdaten mit Kredit-Dienstleistungsunternehmen aus.</span><span style="font-size: 11px;">&nbsp;</span><span style="font-size: 11px;">Sie kÃ¶nnen einer Nutzung oder Ãœbermittlung ihrer Daten zu werblichen Zwecken oder Zwecken der Markt- und Meinungsforschung jederzeit bei uns unter der E-Mail-Adresse &#x53;&#48;&#x34;&#116;&#x76;&#64;&#x73;&#x63;&#x68;&#x61;&#x6C;&#107;&#101;&#x30;&#52;&#46;&#100;&#101; widersprechen.</span><span style="font-size: 11px;">&nbsp;</span><span style="font-size: 11px;">Ãœber dieses Widerspruchsrecht klÃ¤ren wir Sie auch bei jeder werblichen Ansprache erneut auf.</span><span style="font-size: 11px;">&nbsp;</span><span style="font-size: 11px;">Das Gesetz gestattet darÃ¼ber hinaus die Verwendung pseudonymisierter Nutzungsdaten zur bedarfsgerechten Gestaltung unserer Services oder zu Zwecken der Marktforschung. Auch dieser Verwendung kÃ¶nnen Sie wie angegeben widersprechen.</span><span style="font-size: 11px;">&nbsp;</span><span style="font-size: 11px;">Ein Teil unserer Dienste erfordert es, dass wir sog. Cookies einsetzen.</span><span style="font-size: 11px;">&nbsp;</span><span style="font-size: 11px;">Cookies sind kleine Datenmengen, die Ihr Internetbrowser auf Ihrem Rechner speichert. In Cookies kÃ¶nnen Informationen Ã¼ber Ihren Besuch auf unserer Website gespeichert werden.</span><span style="font-size: 11px;">&nbsp;</span><span style="font-size: 11px;">Nur fÃ¼r die aktive Teilnahme an bestimmten Angeboten (z.B. Ticketing, Online-Shop) sind Cookies erforderlich.</span><br /><span style="font-size: 11px;">Die meisten Browser sind standardmÃ¤ÃŸig so eingestellt, dass sie Cookies akzeptieren, aber Sie kÃ¶nnen Ihren Browser so umkonfigurieren, dass er Cookies ablehnt oder vorher eine BestÃ¤tigung von Ihnen erfragt.</span><span style="font-size: 11px;">&nbsp;</span><span style="font-size: 11px;">Wenn Sie Cookies ablehnen, kann dies allerdings zur Folge haben, dass ein Teil unserer Dienste nicht verfÃ¼gbar ist.</span><span style="font-size: 11px;">&nbsp;</span><span style="font-size: 11px;">Bitte haben Sie VerstÃ¤ndnis dafÃ¼r, dass unsere Dienste nicht anonym verwendet werden kÃ¶nnen.</span><span style="font-size: 11px;">&nbsp;</span><span style="font-size: 11px;">Soweit es sich um kostenpflichtige Dienste handelt ist schon fÃ¼r die Zwecke der Abrechnung der Klarname erforderlich.</span><span style="font-size: 11px;">&nbsp;</span><span style="font-size: 11px;">Bei kostenlosen Diensten kÃ¶nnen wir nur so sicherstellen, dass unsere Nutzungsbedingungen eingehalten werden.</span></p>
+
+</div></div></div>
+</div>
+</li>
+<li><a href="index.php/rechtliches.html">Rechtliche Hinweise</a></li>
+<li>
+<div class="ce_lightboxtext block">
+
+<a href="#mb_1667" class="hyperlink_txt" rel="lightbox[lightbox1127 500 520]" title="">Impressum</a>
+<div id="mb_1667" style="display: none;"><div style="width:500px; height:520px; overflow:hidden; color:#ffffff; background-color:#000000;  "><div style="padding:5px 10px;;">
+
+<p><strong>Anbieter</strong><br />FC Schalke 04 e.V.<br />Ernst-Kuzorra-Weg 1<br />45891 Gelsenkirchen<br /><br />
+Telefon: 0209/36180<br />Fax: 0209/3618109<br />&#x73;&#x30;&#52;&#116;&#118;&#64;&#115;&#x63;&#104;&#97;&#108;&#x6B;&#101;&#x30;&#52;&#46;&#100;&#101;<br /><br />
+<strong>Vertretungsberechtigter Vorstand</strong><br />Peter Peters, Horst Heldt<br />Registergericht: Amtsgericht Gelsenkirchen<br /><br />
+Vereinsregisternummer: VR 822<br />Umsatzsteuer-ID: DE 125010647<br /><br />
+<strong>Verantwortlicher im Sinne des Telemediengesetzes bzw. des Staatsvertrages fÃ¼r Rundfunk und Medien:</strong><br />Thomas Spiegel<br />Abteilung Presse + PR<br />Ernst-Kuzorra-Weg 1<br />45891 Gelsenkirchen<br /><br />
+Telefon: 0209/36180<br />Fax: 0209/3618109</p>
+
+</div></div></div>
+</div>
+</li>
+
+
+
+</ul>
+ 
+</div>
+</div>
+
+<!-- indexer::stop -->
+<img src="https://www.s04tv.de/cron.php" alt="" class="invisible" />
+<!-- indexer::continue -->
+
+</div>
+
+<script type="text/javascript" src="plugins/mediabox/js/mediabox.js?1.2.5"></script>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+Mediabox.scanPage = function() {
+  var links = $$("a").filter(function(el) {
+    return el.rel && el.rel.test(/^lightbox/i);
+  });
+  $$(links).mediabox({/* Put custom options here */}, null, function(el) {
+    var rel0 = this.rel.replace(/[[]|]/gi," ");
+    var relsize = rel0.split(" ");
+    return (this == el) || ((this.rel.length > 8) && el.rel.match(relsize[1]));
+  });
+};
+window.addEvent("domready", Mediabox.scanPage);
+//--><!]]>
+</script>
+
+</body>
+</html>
