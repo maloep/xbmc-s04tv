@@ -46,7 +46,7 @@ def buildVideoList(doc):
 				
 		titlePart1 = content.find('div', attrs={'class' : 'field Headline'})
 		titlePart1Value = titlePart1.find('div', attrs={'class' : 'value'})
-		itemTitle = titlePart1Value.string	
+		itemTitle = titlePart1Value.string
 		
 		try:
 			titlePart2 = content.find('div', attrs={'class' : 'field untertitel'})
@@ -87,7 +87,7 @@ def buildVideoLinks(doc, name):
 
 	#parse complete document
 	soup = BeautifulSoup(''.join(doc))
-	videoTag = soup.find('video')	
+	videoTag = soup.find('video')
 	
 	if(videoTag):
 		videoUrl = videoTag['src']
@@ -95,6 +95,39 @@ def buildVideoLinks(doc, name):
 		addLink(name, videoUrl, '')
 	else:
 		xbmc.log('Error while loading video from page. Maybe you are not logged in or site structure has changed.')
+		
+
+def provideTestvideo():
+	
+	url = 'https://www.s04tv.de/index.php/s04tv-kostenlos.html'
+	browser.open(url)	
+	doc = browser.response().read()
+	soup = BeautifulSoup(''.join(doc))
+	
+	imageTag = soup.find('div', attrs={'class' : 'field Bild'})
+	if(not imageTag):
+		xbmc.log('Error while loading test video. div "field Bild" not found.')
+		return
+		
+	link = imageTag.find('a')
+	if(not link):
+		xbmc.log('Error while loading test video. "a href" not found.')
+	linkValue = link['href']
+	imageUrl = imageTag.find('img')	
+	imageUrlValue = BASE_URL +imageUrl['src']
+	
+	newUrl = BASE_URL +linkValue
+	browser.open(newUrl)
+	
+	doc = browser.response().read()
+	soup = BeautifulSoup(''.join(doc))
+	
+	videoTag = soup.find('video')
+	if(not videoTag):
+		xbmc.log('Error while loading test video. "video" tag not found.')
+	videoUrl = videoTag['src']
+	
+	addLink(__language__(30004), videoUrl, imageUrlValue)
 
 
 def addDir(name,url,mode,iconimage):
@@ -182,12 +215,19 @@ def checkLogin(doc, username):
 	
 	matchLoginFailed = re.search('Anmeldung fehlgeschlagen', doc, re.IGNORECASE)
 	if(matchLoginFailed):
-		 xbmcgui.Dialog().ok(PLUGINNAME, __language__(30100) %username, __language__(30101))
-		 return 1
-	else:
-		xbmc.log('You are not logged in.')
-		#Guess we are logged in
-		return 2
+		xbmcgui.Dialog().ok(PLUGINNAME, __language__(30100) %username, __language__(30101))
+		return 1
+	
+	matchLoginFailed = re.search('Bitte geben Sie Benutzername und Passwort ein', doc, re.IGNORECASE)
+	if(matchLoginFailed):
+		xbmcgui.Dialog().ok(PLUGINNAME, __language__(30102), __language__(30103))
+		return 1
+	
+	#not logged in but we don't know the reason
+	xbmc.log('You are not logged in.')
+	#Guess we are logged in
+	return 1
+	
 
 
 def runPlugin(doc):
@@ -200,8 +240,6 @@ def runPlugin(doc):
 	        
 	elif mode==2:
 		buildVideoLinks(doc,name)
-	
-	xbmcplugin.endOfDirectory(thisPlugin)
 
 
 print 'start'
@@ -238,5 +276,11 @@ if(success):
 	browser.open(url)
 	doc = browser.response().read()
 	runPlugin(doc)
-
+else:
+	#provide testvideo
+	provideTestvideo()
+	
+xbmcplugin.endOfDirectory(thisPlugin)
+	
+	
 
