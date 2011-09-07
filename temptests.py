@@ -20,19 +20,27 @@ import mechanize
 
 browser = mechanize.Browser()
 
-url = 'https://www.s04tv.de/?page=2'
+url = 'https://www.s04tv.de/index.php/s04tv-kostenlos.html'
 browser.open(url)
 
 doc = browser.response().read()
 soup = BeautifulSoup(''.join(doc))
 
-previousTag = soup.find('a', attrs={'class' : 'previous'})
-print previousTag['href']
+imageTag = soup.find('div', attrs={'class' : 'field Bild'})
+link = imageTag.find('a')
+linkValue = link['href']
 
-nextTag = soup.find('a', attrs={'class' : 'next'})
-print nextTag['href']
+newUrl = 'https://www.s04tv.de/' +linkValue
+browser.open(newUrl)
 
+doc = browser.response().read()
+soup = BeautifulSoup(''.join(doc))
 
+videoTag = soup.find('video')
+if(videoTag):
+	videoUrl = videoTag['src']
+	
+print videoUrl
 
 
 
