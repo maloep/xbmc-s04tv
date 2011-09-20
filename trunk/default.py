@@ -67,8 +67,9 @@ def buildVideoList(doc):
 		titlePart2 = findTitle(content, 'div', {'class' : 'field untertitel'})		
 		if(titlePart2 == ''):
 			titlePart2 = findTitle(content, 'div', {'class' : 'field Beitragsart'})
-		itemTitle = itemTitle +': ' +titlePart2
-			
+		
+		if(titlePart2 != ''):
+			itemTitle = itemTitle +': ' +titlePart2
 		
 		linkValue = ''
 		imageUrlValue = ''
@@ -112,7 +113,7 @@ def buildVideoLinks(doc, name):
 	if(videoTag):
 		videoUrl = videoTag['src']
 		xbmc.log('start playing video: ' +videoUrl)
-		addLink(name, videoUrl, '')
+		addLink(name, videoUrl, os.path.join(addonPath, 'icon.png'))
 	else:
 		xbmc.log('Error while loading video from page. Maybe you are not logged in or site structure has changed.')
 		
@@ -174,6 +175,8 @@ def findTitle(content, searchTag, attrs):
 		titlePart1Value = titlePart1.find('div', attrs={'class' : 'value'})				
 		if(titlePart1Value):
 			itemTitle = titlePart1Value.string
+	if(itemTitle == None):
+		itemTitle = ''
 	return itemTitle
 
 
