@@ -9,6 +9,7 @@
         <provides>video</provides>
     </extension>
     <extension point="xbmc.addon.metadata">
+		<language></language>
         <platform>all</platform>
         <summary lang="de">Videos von S04tv.de ansehen</summary>
         <summary lang="en">Watch videos from S04tv.de</summary>
