@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="plugin.video.s04tv" name="S04tv" version="1.0.1" provider-name="malte">
+<addon id="plugin.video.s04tv" name="S04tv" version="2.0.0" provider-name="malte">
     <requires>
-        <import addon="xbmc.python" version="2.0"/>
+        <import addon="xbmc.python" version="2.1.0"/>
         <import addon="script.module.mechanize" version="0.2.5"/>
         <import addon="script.module.beautifulsoup" version="3.2.0"/>
     </requires>
@@ -9,7 +9,7 @@
         <provides>video</provides>
     </extension>
     <extension point="xbmc.addon.metadata">
-		<language></language>
+		<language>de</language>
         <platform>all</platform>
         <summary lang="de">Videos von S04tv.de ansehen</summary>
         <summary lang="en">Watch videos from S04tv.de</summary>
