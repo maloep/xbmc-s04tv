@@ -11,6 +11,10 @@
     <extension point="xbmc.addon.metadata">
 		<language>de</language>
         <platform>all</platform>
+		<license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
+		<forum>http://forum.xbmc.org/showthread.php?tid=109692</forum>
+		<website>https://code.google.com/p/xbmc-s04tv/</website>
+		<source>https://xbmc-s04tv.googlecode.com/svn/trunk/</source>
         <summary lang="de">Videos von S04tv.de ansehen</summary>
         <summary lang="en">Watch videos from S04tv.de</summary>
         <description lang="de">Online Video Portal des FC Schalke 04. Alle Spiele in re-Live (15 Minuten nach Abfiff), Interviews, exklusive Berichte und Specials. Setzt einen S04tv.de Benutzer Account voraus. Mehr Details auf https://www.s04tv.de.</description>
