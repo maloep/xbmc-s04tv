@@ -11,21 +11,19 @@
 # You should have received a copy of the GNU General Public License along with this program; 
 # if not, see <http://www.gnu.org/licenses/>.
 
-import xbmcplugin
-import xbmcgui
-import xbmcaddon
-import os, sys, re
+import xbmc, xbmcplugin, xbmcgui, xbmcaddon
+import os, sys, re, json, string
 import urllib, urllib2
 from urlparse import *
+import xml.etree.ElementTree as ET
+
 
 PLUGINNAME = 'S04tv'
 PLUGINID = 'plugin.video.s04tv'
-BASE_URL = 'https://www.s04tv.de/'
+BASE_URL = 'http://www.s04.tv'
 
 # Shared resources
 addonPath = ''
-
-import xbmcaddon
 __addon__ = xbmcaddon.Addon(id='plugin.video.s04tv')
 addonPath = __addon__.getAddonInfo('path')
         
@@ -35,14 +33,163 @@ sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib", "BeautifulSoup" ) )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib", "mechanize" ) )
 
 from BeautifulSoup import BeautifulSoup
-import mechanize
+from BeautifulSoup import Tag
+
 
 __language__ = __addon__.getLocalizedString
 thisPlugin = int(sys.argv[1])
 
-browser = mechanize.Browser()
 
 
+def buildHomeDir(url, doc):
+    soup = BeautifulSoup(''.join(doc))
+    
+    nav = soup.find('nav')
+    
+    for navitem in nav.contents:
+        #first tag is our ul
+        if(type(navitem) == Tag):
+            for ulitem in navitem.contents:
+                if(type(ulitem) == Tag):
+                    if(ulitem.name == 'li'):
+                        a = ulitem.find('a')
+                        url = BASE_URL + a['href']
+                        print 'url = ' +url
+                        #HACK: don't add Home menu as all videos are available in other categories
+                        if(a.text != 'Home'):
+                            addDir(a.text, url, 2, '')
+            break
+        
+
+def buildSubDir(url, doc):
+    print 'url = ' +url
+    soup = BeautifulSoup(''.join(doc))
+    
+    nav = soup.find('ul', attrs={'class': 'contentnav'})
+    if(nav):
+        div =  nav.find('div')
+        if(div):
+            ul = div.find('ul')
+            for ulitem in ul.contents:
+                if(type(ulitem) == Tag):
+                    if(ulitem.name == 'li'):
+                        a = ulitem.find('a')
+                        url = BASE_URL + a['href']
+                        print 'url = ' +url
+                        addDir(a.text, url, 3, '')
+        else:
+            buildVideoLinks(url, doc)
+    else:
+        buildVideoLinks(url, doc)
+        
+    buildVideoLinks(url, doc)
+        
+        
+def buildSubSubDir(url, doc):
+    print 'buildSubSubDir'
+    print 'url = ' +url
+    soup = BeautifulSoup(''.join(doc))
+    
+    #get pagenumber
+    indexpage = url.find('page/')
+    indexpage = indexpage + len('page/')
+    indexminus = url.find('-', indexpage) 
+    pagenumber = url[indexpage:indexminus]
+    
+    #check if we have corresponding sub menus
+    li = soup.find('li', attrs={'class':'dm_%s'%pagenumber})
+    if(li == None):
+        buildVideoLinks(url, doc)
+        return
+    
+    div =  li.find('div')
+    ul = div.find('ul')
+    for ulitem in ul.contents:
+        if(type(ulitem) == Tag):
+            if(ulitem.name == 'li'):
+                a = ulitem.find('a')
+                url = BASE_URL + a['href']
+                print 'url = ' +url
+                addDir(a.text, url, 3, '')
+
+
+def buildVideoLinks(url, doc):
+    print 'buildVideoLinks'
+    print 'url = ' +url
+    
+    soup = BeautifulSoup(''.join(doc))
+    articles = soup.findAll('article', attrs={'class': 'video_gallery'})
+    for article in articles:
+        div = article.find('div')
+        flag = div['class']
+        #for some reason findNextSibling does not work here
+        img = div.findAllNext('img', limit=1)
+        imageUrl = img[0]['src']
+        a = img[0].findAllNext('a', limit=1)
+        url = a[0]['href']
+        span = a[0].find('span')
+        title = ''
+        for text in span.contents:
+            if(type(text) != Tag):
+                if(title != ''):
+                    title = title +': '
+                title = title +text
+        if(flag == 'flag_free'):
+            title = '[FREE] ' +title
+        elif(flag == 'flag_excl'):
+            title = '[EXCL] ' +title
+                
+        url = getVideoUrl(BASE_URL + url)
+        addLink(title, url, imageUrl)
+
+
+def getVideoUrl(url):
+    print 'getVideoUrl'
+    
+    doc = getUrl(url)
+    soup = BeautifulSoup(''.join(doc))
+    
+    div = soup.find('div', attrs={'class': 'videobox'})
+    script = div.find('script', attrs={'type': 'text/javascript'})
+    
+    scripttext = script.next
+    indexbegin = scripttext.find("videoid: '")
+    indexbegin = indexbegin + len("videoid: '")
+    indexend = scripttext.find("'", indexbegin)
+    xmlurl = scripttext[indexbegin:indexend]
+    
+    #load xml file
+    xmlstring = getUrl(BASE_URL +xmlurl)
+    root = ET.fromstring(xmlstring)
+    
+    urlElement = root.find('invoke/url')
+    
+    xmlstring = getUrl(urlElement.text)
+    root = ET.fromstring(xmlstring)
+    metas = root.findall('head/meta')
+    vid_base_url = ''
+    for meta in metas:
+        if( meta.attrib.get('name') == 'httpBase'):
+            vid_base_url = meta.attrib.get('content')
+            break
+    
+    videos = root.findall('body/switch/video')
+    hdvideo = videos[len(videos)-1]
+    src = hdvideo.attrib.get('src')
+    videourl = vid_base_url +src +'&v=&fp=&r=&g='
+    return videourl
+    
+    
+    
+    """
+    for video in videos:
+        src = video.attrib.get('src')
+        print vid_base_url +src
+    """
+
+
+
+"""
 def buildVideoList(doc):
     xbmc.log('buildVideoList')
     
@@ -102,8 +249,9 @@ def buildVideoList(doc):
         itemTitle = __language__(30003)
         url = BASE_URL + pageLink
         addDir(itemTitle, url, 1, '')
+"""
 
-
+"""
 def buildVideoLinks(doc, name):
     xbmc.log('buildVideoLinks')
 
@@ -121,14 +269,15 @@ def buildVideoLinks(doc, name):
             xbmc.log('Error while loading video from page. Maybe you are not logged in or site structure has changed.')
     else:
         xbmc.log('Error while loading video from page. Maybe you are not logged in or site structure has changed.')
-        
+"""  
 
+"""
 def provideTestvideoDir():
 
     xbmc.log('provideTestvideo')
     
     url = 'https://www.s04tv.de/index.php/s04tv-kostenlos.html'
-    browser.open(url)    
+    browser.open(url)
     doc = browser.response().read()
     soup = BeautifulSoup(''.join(doc))
     
@@ -165,6 +314,7 @@ def provideTestvideoDir():
     
     videoUrl = sourceTag['src']
     addLink(__language__(30004), videoUrl, imageUrlValue)
+"""
 
 
 def addDir(name,url,mode,iconimage):
@@ -187,102 +337,65 @@ def addLink(name,url,iconimage):
     return ok
 
 
-def findTitle(content, searchTag, attrs):
-    itemTitle = ''
-    titlePart1 = content.find(searchTag, attrs)                
-    if(titlePart1):
-        titlePart1Value = titlePart1.find('div', attrs={'class' : 'value'})                
-        if(titlePart1Value):
-            itemTitle = titlePart1Value.string
-    if(itemTitle == None):
-        itemTitle = ''
-    return itemTitle
-
-
-
-def login(cookieFile):
-
+def login():
     username = __addon__.getSetting('username')
     xbmc.log('username: ' +username) 
     password = __addon__.getSetting('password')
     
-    cj = mechanize.LWPCookieJar()
+    xbmc.log('Logging in with username "%s"' %username)
+    loginparams = {'username_field' : username, 'password_field' : password}
+    loginurl = 'https://ssl.s04.tv/get_content.php?lang=TV&form=login&%s' %urllib.urlencode(loginparams)
+    loginresponse = getUrl(loginurl)
+    xbmc.log('login response: ' +loginresponse)
     
-    try:
-        xbmc.log('load cookie file')
-        #ignore_discard=True loads session cookies too
-        cj.load(cookieFile, ignore_discard=True)
-        browser.set_cookiejar(cj)
-        
-        xbmc.log('cookies loaded, checking if they are still valid...')
-        browser.open("https://www.s04tv.de")
-        doc = browser.response().read()
-        
-        loginStatus = checkLogin(doc, username)
-        if(loginStatus == 0):
+    #loginresponse should look like this: ({"StatusCode":"1","stat":"OK","UserData":{"SessionID":"...","Firstname":"...","Lastname":"...","Username":"lom","hasAbo":1,"AboExpiry":"31.07.14"},"out":"<form>...</form>"});
+    #remove (); from response
+    jsonstring = loginresponse[1:len(loginresponse) -2]
+    jsonResult = json.loads(jsonstring)
+    if(jsonResult['stat'] == "OK"):
+        userdata = jsonResult['UserData']
+        if(userdata['hasAbo'] == 1):
+            xbmc.log('login successful')
             return True
-    #if cookie file does not exist we just keep going...
-    except IOError:
-        xbmc.log('Error loading cookie file. Trying to log in again.')
-        pass
-    
-    xbmc.log('Logging in')    
-        
-    browser.open("https://www.s04tv.de")
-    #HACK: find out how to address form by name
-    browser.select_form(nr=0)
-    browser.form['username'] = username
-    browser.form['password'] = password
-    browser.submit()
-    
-    cj.save(cookieFile, ignore_discard=True)
-    
-    doc = browser.response().read()
-    loginStatus = checkLogin(doc, username)            
-    return loginStatus == 0
-    
-
-def checkLogin(doc, username):
-    
-    print 'checkLogin'
-    
-    matchLoginSuccessful = re.search('Sie sind angemeldet als', doc, re.IGNORECASE)
-    if(matchLoginSuccessful):
-        xbmc.log('login successful')
-        return 0
-    
-    matchLoginFailed = re.search('Anmeldung fehlgeschlagen', doc, re.IGNORECASE)
-    if(matchLoginFailed):
+        else:
+            print 'login failed'
+            return False
+    else:
         xbmc.log('login failed')
-        xbmcgui.Dialog().ok(PLUGINNAME, __language__(30100) %username, __language__(30101))
-        return 1
-    
-    matchLoginFailed = re.search('Bitte geben Sie Benutzername und Passwort ein', doc, re.IGNORECASE)
-    if(matchLoginFailed):
-        xbmc.log('no username or password')
-        xbmcgui.Dialog().ok(PLUGINNAME, __language__(30102), __language__(30103))
-        return 1
-    
-    #not logged in but we don't know the reason
-    xbmc.log('You are not logged in.')
-    #Guess we are not logged in
-    return 1
+        return False
     
 
+def getUrl(url):
+        url = url.replace('&amp;','&')
+        xbmc.log('Get url: '+url)
+        req = urllib2.Request(url)
+        req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+        response = urllib2.urlopen(req)
+        link=response.read()
+        response.close()
+        return link
+    
 
-def runPlugin(doc):
+def num_gen(size=1, chars=string.digits):
+        return ''.join(random.choice(chars) for x in range(size))
+
+
+def runPlugin(url, doc):
     
     if mode==None or doc==None or len(doc)<1:
-        buildVideoList(doc)
+        buildHomeDir(url, doc)
        
     elif mode==1:
-        buildVideoList(doc)
+        buildHomeDir(url, doc)
             
     elif mode==2:
-        buildVideoLinks(doc,name)
+        buildSubDir(url, doc)
+        
+    elif mode==3:
+        buildSubSubDir(url, doc)
 
 
-print 'S04TV: start addon'
+xbmc.log('S04TV: start addon')
 
 params = parse_qs(urlparse(sys.argv[2]).query)
 url=None
@@ -309,25 +422,8 @@ print "Name: "+str(name)
 if(url == None):
     url = BASE_URL
 
-path = xbmc.translatePath('special://profile/addon_data/%s' %(PLUGINID))
 
-if not os.path.exists(path):
-    try:
-        os.makedirs(path)
-    except:
-        path = ''
-
-success = login(os.path.join(path, 'cookies.txt'))
-
-
-if(success):
-    browser.open(url)
-    doc = browser.response().read()
-    runPlugin(doc)
-else:
-    provideTestvideoDir()
-
+doc = getUrl(url)
+runPlugin(url, doc)
 xbmcplugin.endOfDirectory(thisPlugin)
     
-    
-
