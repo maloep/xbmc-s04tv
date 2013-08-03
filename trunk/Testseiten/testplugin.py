@@ -86,6 +86,10 @@ def buildVideoLinks(url, doc):
     for article in articles:
         div = article.find('div')
         print div['class']
+        
+        p = div.findAllNext('p', limit=1)
+        print p[0].text
+        
         #for some reason findNextSibling does not work here
         img = div.findAllNext('img', limit=1)
         print img[0]['src']
@@ -106,6 +110,12 @@ def getVideoUrl(url):
     
     doc = getUrl(url)
     soup = BeautifulSoup(''.join(doc))
+    
+    p = soup.find('p', attrs={'class': 'breadcrumbs'})
+    a = p.find('a')
+    title = a['title']
+    if(title == ''):
+        title = 'Play video'
     
     div = soup.find('div', attrs={'class': 'videobox'})
     script = div.find('script', attrs={'type': 'text/javascript'})
@@ -207,12 +217,15 @@ doc = getUrl(url)
 buildSubSubDir(url, doc)
 """
 
-"""
+
 url = "http://www.s04.tv/de/saison/highlights/saison-2013/14/testspiele/page/332--4--.html"
 doc = getUrl(url)
 buildVideoLinks(url, doc)
+
+
 """
 url = "http://www.s04.tv/de/saison/highlights/saison-2011/12/dfb-pokal/mp4migration/110531_pokallights1_neu/page/116---262-.html"
 #url = "http://www.s04.tv/de/saison/highlights/saison-2013/14/testspiele/mp4/130729_lokleipzig_schalke_s04tv/page/335---323-.html"
 doc = getUrl(url)
 getVideoUrl(url)
+"""
