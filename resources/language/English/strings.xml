@@ -9,6 +9,7 @@
 	<string id="30006">Hide [FREE/EXCL] flag</string>
 	<string id="30007">Hide videos that require login</string>
 	<string id="30008">Video qualitiy</string>
+	<string id="30009">Hide date in title</string>
 	
 	<string id="30100">Login failed for user "%s".</string>	
 	<string id="30101">Please validate your credentials in plugin settings.</string>

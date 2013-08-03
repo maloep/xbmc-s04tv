@@ -56,7 +56,7 @@ def buildHomeDir(url, doc):
                         url = BASE_URL + a['href']
                         #HACK: don't add Home menu as all videos are available in other categories
                         if(a.text != 'Home'):
-                            addDir(a.text, url, 2, '')
+                            addDir(a.text, url, 2, '', '')
             break
         
 
@@ -74,7 +74,7 @@ def buildSubDir(url, doc):
                     if(ulitem.name == 'li'):
                         a = ulitem.find('a')
                         url = BASE_URL + a['href']
-                        addDir(a.text, url, 3, '')
+                        addDir(a.text, url, 3, '', '')
         else:
             buildVideoDir(url, doc)
             return
@@ -109,21 +109,32 @@ def buildSubSubDir(url, doc):
             if(ulitem.name == 'li'):
                 a = ulitem.find('a')
                 url = BASE_URL + a['href']
-                addDir(a.text, url, 3, '')
+                addDir(a.text, url, 3, '', '')
 
 
 def buildVideoDir(url, doc):
-    xbmc.log('buildVideoDir')    
+    xbmc.log('buildVideoDir')
+    
+    #allow sorting of video titles
+    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_UNSORTED)    
+    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_DATE)
+    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TITLE)
     
     hideexclusive = __addon__.getSetting('hideexclusivevideos').upper() == 'TRUE'
     hideflag = __addon__.getSetting('hidefreeexclflag').upper() == 'TRUE'
+    hidedate = __addon__.getSetting('hidedate').upper() == 'TRUE'
     
     soup = BeautifulSoup(''.join(doc))
     articles = soup.findAll('article', attrs={'class': 'video_gallery'})
     for article in articles:
+                
         div = article.find('div')
         flag = div['class']
+        
         #for some reason findNextSibling does not work here
+        p = div.findAllNext('p', limit=1)
+        date = p[0].text
+                
         img = div.findAllNext('img', limit=1)
         imageUrl = img[0]['src']
         a = img[0].findAllNext('a', limit=1)
@@ -135,6 +146,9 @@ def buildVideoDir(url, doc):
                 if(title != ''):
                     title = title +': '
                 title = title +text
+                
+        if(not hidedate):
+            title = title + ' (%s)'%date
                 
         extraInfo = {}
         if(flag == 'flag_free'):
@@ -150,7 +164,7 @@ def buildVideoDir(url, doc):
             extraInfo['IsFreeContent'] = 'False'
                 
         url = BASE_URL + url
-        addDir(title, url, 4, imageUrl, extraInfo)
+        addDir(title, url, 4, imageUrl, date, extraInfo)
 
 
 def getVideoUrl(url, doc):
@@ -165,12 +179,14 @@ def getVideoUrl(url, doc):
     
     soup = BeautifulSoup(''.join(doc))
     
+    #title
     p = soup.find('p', attrs={'class': 'breadcrumbs'})
     a = p.find('a')
     title = a['title']
     if(title == ''):
         title = __language__(30005)
     
+    #grab url
     div = soup.find('div', attrs={'class': 'videobox'})
     script = div.find('script', attrs={'type': 'text/javascript'})
     
@@ -211,13 +227,13 @@ def getVideoUrl(url, doc):
     addLink(title, videourl, '')
 
 
-def addDir(name, url, mode, iconimage, extraInfo = {}):
+def addDir(name, url, mode, iconimage, date, extraInfo = {}):
     parameters = {'url' : url.encode('utf-8'), 'mode' : str(mode), 'name' : name.encode('utf-8')}
     u = sys.argv[0] +'?' +urllib.urlencode(parameters)
     #xbmc.log('addDir url = ' +str(u))
     ok = True
     liz = xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
-    liz.setInfo(type="Video", infoLabels={"Title": name})
+    liz.setInfo(type="Video", infoLabels={"Title": name, "Date": date})
     for key in extraInfo.keys():
         liz.setProperty(key, extraInfo[key])
     ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz, isFolder=True)
@@ -230,6 +246,7 @@ def addLink(name,url,iconimage):
     liz = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
     liz.setInfo(type="Video", infoLabels={ "Title": name})
     ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=liz)
+    
     return ok
 
 
@@ -329,5 +346,5 @@ if(url == None):
 
 doc = getUrl(url)
 runPlugin(url, doc)
+#sort video items
 xbmcplugin.endOfDirectory(thisPlugin)
-    
