@@ -115,6 +115,9 @@ def buildSubSubDir(url, doc):
 def buildVideoDir(url, doc):
     xbmc.log('buildVideoDir')    
     
+    hideexclusive = __addon__.getSetting('hideexclusivevideos').upper() == 'TRUE'
+    hideflag = __addon__.getSetting('hidefreeexclflag').upper() == 'TRUE'
+    
     soup = BeautifulSoup(''.join(doc))
     articles = soup.findAll('article', attrs={'class': 'video_gallery'})
     for article in articles:
@@ -132,14 +135,18 @@ def buildVideoDir(url, doc):
                 if(title != ''):
                     title = title +': '
                 title = title +text
-        
+                
         extraInfo = {}
         if(flag == 'flag_free'):
-            #TODO: add setting not to display FREE/EXCL flag
-            title = '[FREE] ' +title
+            if(not hideflag):
+                title = '[FREE] ' +title
             extraInfo['IsFreeContent'] = 'True'
         elif(flag == 'flag_excl'):
-            title = '[EXCL] ' +title
+            if(hideexclusive):
+                #don't add exclusive videos to list
+                continue
+            if(not hideflag):
+                title = '[EXCL] ' +title
             extraInfo['IsFreeContent'] = 'False'
                 
         url = BASE_URL + url
@@ -188,9 +195,14 @@ def getVideoUrl(url, doc):
             vid_base_url = meta.attrib.get('content')
             break
     
+    quality = __addon__.getSetting('videoquality')
+    quality = '_%s.mp4'%quality
     videos = root.findall('body/switch/video')
-    hdvideo = videos[len(videos)-1]
-    src = hdvideo.attrib.get('src')    
+    for video in videos:
+        src = video.attrib.get('src')
+        if(src.find(quality) > 0):
+            break
+    
     v = '2.11.3'
     fp = 'WIN%2011,8,800,97'
     r = num_gen(5, string.ascii_uppercase)
