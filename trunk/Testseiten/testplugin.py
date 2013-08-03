@@ -131,10 +131,18 @@ def getVideoUrl(url):
             vid_base_url = meta.attrib.get('content')
             break
     
+    quality = 'low400'
+    quality = '_%s.mp4'%quality
     videos = root.findall('body/switch/video')
+    print 'quality: ' +quality 
+    
     for video in videos:
         src = video.attrib.get('src')
-        print vid_base_url +src
+        print 'src: ' +src
+        if(src.find(quality) > 0):
+            break
+        
+    print 'found video = ' +src
             
 
 def login():
@@ -204,7 +212,7 @@ url = "http://www.s04.tv/de/saison/highlights/saison-2013/14/testspiele/page/332
 doc = getUrl(url)
 buildVideoLinks(url, doc)
 """
-
-url = "http://www.s04.tv/de/saison/highlights/saison-2013/14/testspiele/mp4/130729_lokleipzig_schalke_s04tv/page/335---323-.html"
+url = "http://www.s04.tv/de/saison/highlights/saison-2011/12/dfb-pokal/mp4migration/110531_pokallights1_neu/page/116---262-.html"
+#url = "http://www.s04.tv/de/saison/highlights/saison-2013/14/testspiele/mp4/130729_lokleipzig_schalke_s04tv/page/335---323-.html"
 doc = getUrl(url)
 getVideoUrl(url)
