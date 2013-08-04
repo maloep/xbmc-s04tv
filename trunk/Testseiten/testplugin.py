@@ -77,32 +77,70 @@ def buildSubSubDir(url, doc):
                 print a['href']
         
 
-def buildVideoLinks(url, doc):
-    print 'buildVideoLinks'
-    print 'url = ' +url
+def buildVideoDir(url, doc):
+    
+    hideexclusive = True
+    hideflag = True
+    hidedate = True
     
     soup = BeautifulSoup(''.join(doc))
-    articles = soup.findAll('article', attrs={'class': 'video_gallery'})
+    articles = soup.findAll('article')
     for article in articles:
+                
         div = article.find('div')
-        print div['class']
+        if(not div):
+            missingelementtext = "Missing element '%s'. Maybe the site structure has changed."
+            print missingelementtext%'div'
+            continue
         
-        p = div.findAllNext('p', limit=1)
-        print p[0].text
+        flag = div['class']
         
         #for some reason findNextSibling does not work here
+        p = div.findAllNext('p', limit=1)
+        date = p[0].text
+                
         img = div.findAllNext('img', limit=1)
-        print img[0]['src']
-        a = img[0].findAllNext('a', limit=1)
-        print a[0]['href']
-        span = a[0].find('span')
+        imageUrl = img[0]['src']
+        
+        #HACK: this is only required on home page
+        h2 = img[0].findAllNext('h2', limit=1)
+        if(h2):
+            a = h2[0].findAllNext('a', limit=1)
+            url = a[0]['href']
+            span = a[0].find('span')
+        else:
+            a = img[0].findAllNext('a', limit=1)
+            url = a[0]['href']
+            span = a[0].find('span')
+        
         title = ''
         for text in span.contents:
             if(type(text) != Tag):
                 if(title != ''):
                     title = title +': '
                 title = title +text
-        print title.lstrip()
+                
+        if(not hidedate):
+            title = title + ' (%s)'%date
+                
+        extraInfo = {}
+        if(flag == 'flag_free'):
+            if(not hideflag):
+                title = '[FREE] ' +title
+            extraInfo['IsFreeContent'] = 'True'
+        elif(flag == 'flag_excl'):
+            if(hideexclusive):
+                #don't add exclusive videos to list
+                continue
+            if(not hideflag):
+                title = '[EXCL] ' +title
+            extraInfo['IsFreeContent'] = 'False'
+                
+        url = BASE_URL + url
+        print title
+        print url
+        print flag
+        #addDir(title, url, 4, imageUrl, date, extraInfo)
 
         
 def getVideoUrl(url):
@@ -218,14 +256,15 @@ buildSubSubDir(url, doc)
 """
 
 
-url = "http://www.s04.tv/de/saison/highlights/saison-2013/14/testspiele/page/332--4--.html"
-doc = getUrl(url)
-buildVideoLinks(url, doc)
-
-
 """
+#url = "http://www.s04.tv/de/saison/highlights/saison-2013/14/testspiele/page/332--4--.html"
+url = "http://www.s04.tv"
+doc = getUrl(url)
+buildVideoDir(url, doc)
+"""
+
+
 url = "http://www.s04.tv/de/saison/highlights/saison-2011/12/dfb-pokal/mp4migration/110531_pokallights1_neu/page/116---262-.html"
 #url = "http://www.s04.tv/de/saison/highlights/saison-2013/14/testspiele/mp4/130729_lokleipzig_schalke_s04tv/page/335---323-.html"
 doc = getUrl(url)
 getVideoUrl(url)
-"""
