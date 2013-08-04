@@ -1,4 +1,4 @@
-# Copyright (C) 2012 Malte Loepmann (maloep@googlemail.com)
+# Copyright (C) 2013 Malte Loepmann (maloep@googlemail.com)
 #
 # This program is free software; you can redistribute it and/or modify it under the terms 
 # of the GNU General Public License as published by the Free Software Foundation; 
@@ -38,13 +38,16 @@ from BeautifulSoup import Tag
 __language__ = __addon__.getLocalizedString
 thisPlugin = int(sys.argv[1])
 
-
+missingelementtext = "Missing element '%s'. Maybe the site structure has changed."
 
 def buildHomeDir(url, doc):
     xbmc.log('buildHomeDir')
     soup = BeautifulSoup(''.join(doc))
     
     nav = soup.find('nav')
+    if(not nav):
+        xbmc.log(missingelementtext%'nav')
+        return
     
     for navitem in nav.contents:
         #first tag is our ul
@@ -53,10 +56,11 @@ def buildHomeDir(url, doc):
                 if(type(ulitem) == Tag):
                     if(ulitem.name == 'li'):
                         a = ulitem.find('a')
+                        if(not a):
+                            xbmc.log(missingelementtext%'a')
+                            continue
                         url = BASE_URL + a['href']
-                        #HACK: don't add Home menu as all videos are available in other categories
-                        if(a.text != 'Home'):
-                            addDir(a.text, url, 2, '', '')
+                        addDir(a.text, url, 2, '', '')
             break
         
 
@@ -65,25 +69,27 @@ def buildSubDir(url, doc):
     soup = BeautifulSoup(''.join(doc))
     
     nav = soup.find('ul', attrs={'class': 'contentnav'})
-    if(nav):
-        div =  nav.find('div')
-        if(div):
-            ul = div.find('ul')
-            for ulitem in ul.contents:
-                if(type(ulitem) == Tag):
-                    if(ulitem.name == 'li'):
-                        a = ulitem.find('a')
-                        url = BASE_URL + a['href']
-                        addDir(a.text, url, 3, '', '')
-        else:
-            buildVideoDir(url, doc)
-            return
-    else:
+    if(not nav):
+        #no subdir (home page or flat category)
         buildVideoDir(url, doc)
         return
-     
-    #TODO: add setting to add videos to main categories   
-    #buildVideoDir(url, doc)
+    
+    div =  nav.find('div')
+    if(not div):
+        #no subdir (home page or flat category)
+        buildVideoDir(url, doc)
+        return
+    
+    ul = div.find('ul')
+    for ulitem in ul.contents:
+        if(type(ulitem) == Tag):
+            if(ulitem.name == 'li'):
+                a = ulitem.find('a')
+                if(not a):
+                    xbmc.log(missingelementtext%'a')
+                    continue
+                url = BASE_URL + a['href']
+                addDir(a.text, url, 3, '', '')
         
         
 def buildSubSubDir(url, doc):
@@ -93,21 +99,33 @@ def buildSubSubDir(url, doc):
     #get pagenumber
     indexpage = url.find('page/')
     indexpage = indexpage + len('page/')
-    indexminus = url.find('-', indexpage) 
-    pagenumber = url[indexpage:indexminus]
+    indexminus = url.find('-', indexpage)
+    pagenumber = ''
+    if(indexpage >=0 and indexminus > indexpage): 
+        pagenumber = url[indexpage:indexminus]
     
     #check if we have corresponding sub menus
     li = soup.find('li', attrs={'class':'dm_%s'%pagenumber})
-    if(li == None):
+    if(not li):
+        #no sub sub dir
         buildVideoDir(url, doc)
         return
     
     div =  li.find('div')
+    if(not div):
+        xbmc.log(missingelementtext%'div')
+        return
     ul = div.find('ul')
+    if(not ul):
+        xbmc.log(missingelementtext%'ul')
+        return
     for ulitem in ul.contents:
         if(type(ulitem) == Tag):
             if(ulitem.name == 'li'):
                 a = ulitem.find('a')
+                if(not a):
+                    xbmc.log(missingelementtext%'a')
+                    continue
                 url = BASE_URL + a['href']
                 addDir(a.text, url, 3, '', '')
 
@@ -125,21 +143,53 @@ def buildVideoDir(url, doc):
     hidedate = __addon__.getSetting('hidedate').upper() == 'TRUE'
     
     soup = BeautifulSoup(''.join(doc))
-    articles = soup.findAll('article', attrs={'class': 'video_gallery'})
+    articles = soup.findAll('article')
+    if(not articles):
+        xbmc.log(missingelementtext%'article')
+        return
+    
     for article in articles:
                 
         div = article.find('div')
+        if(not div):
+            xbmc.log(missingelementtext%'div')
+            continue
+        
         flag = div['class']
         
         #for some reason findNextSibling does not work here
         p = div.findAllNext('p', limit=1)
+        if(not p):
+            xbmc.log(missingelementtext%'p')
+            continue
         date = p[0].text
                 
         img = div.findAllNext('img', limit=1)
+        if(not img):
+            xbmc.log(missingelementtext%'img')
+            continue
         imageUrl = img[0]['src']
-        a = img[0].findAllNext('a', limit=1)
-        url = a[0]['href']
-        span = a[0].find('span')
+        
+        #HACK: this is only required on home page
+        h2 = img[0].findAllNext('h2', limit=1)
+        if(h2):
+            a = h2[0].findAllNext('a', limit=1)
+            if(not a):
+                xbmc.log(missingelementtext%'a')
+                continue
+            url = a[0]['href']
+            span = a[0].find('span')
+        else:
+            a = img[0].findAllNext('a', limit=1)
+            if(not a):
+                xbmc.log(missingelementtext%'a')
+                continue
+            url = a[0]['href']
+            span = a[0].find('span')
+        
+        if(not span):
+            xbmc.log(missingelementtext%'span')
+            continue
         title = ''
         for text in span.contents:
             if(type(text) != Tag):
@@ -181,30 +231,53 @@ def getVideoUrl(url, doc):
     
     #title
     p = soup.find('p', attrs={'class': 'breadcrumbs'})
+    if(not p):
+        xbmc.log(missingelementtext%'p')
+        return
     a = p.find('a')
+    if(not a):
+        xbmc.log(missingelementtext%'a')
+        return
     title = a['title']
     if(title == ''):
         title = __language__(30005)
     
     #grab url
     div = soup.find('div', attrs={'class': 'videobox'})
+    if(not div):
+        xbmc.log(missingelementtext%'div')
+        return
     script = div.find('script', attrs={'type': 'text/javascript'})
-    
+    if(not script):
+        xbmc.log(missingelementtext%'script')
+        return
     scripttext = script.next
     indexbegin = scripttext.find("videoid: '")
     indexbegin = indexbegin + len("videoid: '")
     indexend = scripttext.find("'", indexbegin)
-    xmlurl = scripttext[indexbegin:indexend]
+    xmlurl = ''
+    if(indexbegin >= 0 and indexend > indexbegin):
+        xmlurl = scripttext[indexbegin:indexend]
+    else:
+        xbmc.log('Could not find videoid in script')
+        return
     
     #load xml file
     xmlstring = getUrl(BASE_URL +xmlurl)
     root = ET.fromstring(xmlstring)
     
     urlElement = root.find('invoke/url')
+    if(urlElement == None):
+        print 'urlElement: ' +str(urlElement)
+        xbmc.log(missingelementtext%'invoke/url')
+        return
     
     xmlstring = getUrl(urlElement.text)
     root = ET.fromstring(xmlstring)
     metas = root.findall('head/meta')
+    if(metas == None):
+        xbmc.log(missingelementtext%'head/meta')
+        return
     vid_base_url = ''
     for meta in metas:
         if( meta.attrib.get('name') == 'httpBase'):
@@ -214,6 +287,9 @@ def getVideoUrl(url, doc):
     quality = __addon__.getSetting('videoquality')
     quality = '_%s.mp4'%quality
     videos = root.findall('body/switch/video')
+    if(videos == None):
+        xbmc.log(missingelementtext%'body/switch/video')
+        return
     for video in videos:
         src = video.attrib.get('src')
         if(src.find(quality) > 0):
@@ -233,7 +309,10 @@ def addDir(name, url, mode, iconimage, date, extraInfo = {}):
     #xbmc.log('addDir url = ' +str(u))
     ok = True
     liz = xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
-    liz.setInfo(type="Video", infoLabels={"Title": name, "Date": date})
+    if(date != ''):
+        liz.setInfo(type="Video", infoLabels={"Title": name, "Date": date})
+    else:
+        liz.setInfo(type="Video", infoLabels={"Title": name})
     for key in extraInfo.keys():
         liz.setProperty(key, extraInfo[key])
     ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz, isFolder=True)
