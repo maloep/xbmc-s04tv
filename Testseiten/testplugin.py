@@ -77,41 +77,55 @@ def buildSubSubDir(url, doc):
                 print a['href']
         
 
+
 def buildVideoDir(url, doc):
     
-    hideexclusive = True
-    hideflag = True
-    hidedate = True
+    hideexclusive = False
+    hideflag = False
+    hidedate = False
     
     soup = BeautifulSoup(''.join(doc))
     articles = soup.findAll('article')
+    if(not articles):
+        return
+    
     for article in articles:
                 
         div = article.find('div')
         if(not div):
-            missingelementtext = "Missing element '%s'. Maybe the site structure has changed."
-            print missingelementtext%'div'
             continue
         
         flag = div['class']
         
         #for some reason findNextSibling does not work here
         p = div.findAllNext('p', limit=1)
-        date = p[0].text
+        if(not p):
+            date = ''
+        else:
+            date = p[0].text
                 
         img = div.findAllNext('img', limit=1)
+        if(not img):
+            continue
         imageUrl = img[0]['src']
         
         #HACK: this is only required on home page
         h2 = img[0].findAllNext('h2', limit=1)
         if(h2):
             a = h2[0].findAllNext('a', limit=1)
+            if(not a):
+                continue
             url = a[0]['href']
             span = a[0].find('span')
         else:
             a = img[0].findAllNext('a', limit=1)
+            if(not a):
+                continue
             url = a[0]['href']
             span = a[0].find('span')
+        
+        if(not span):
+            continue
         
         title = ''
         for text in span.contents:
@@ -119,6 +133,11 @@ def buildVideoDir(url, doc):
                 if(title != ''):
                     title = title +': '
                 title = title +text
+                
+        #only required for homescreen
+        span2 = span.nextSibling
+        if(span2):
+            title = title +': ' +span2.text
                 
         if(not hidedate):
             title = title + ' (%s)'%date
@@ -136,10 +155,14 @@ def buildVideoDir(url, doc):
                 title = '[EXCL] ' +title
             extraInfo['IsFreeContent'] = 'False'
                 
+        
         url = BASE_URL + url
         print title
         print url
-        print flag
+        print imageUrl
+        print date
+        print flag        
+        
         #addDir(title, url, 4, imageUrl, date, extraInfo)
 
         
@@ -256,15 +279,15 @@ buildSubSubDir(url, doc)
 """
 
 
-"""
 #url = "http://www.s04.tv/de/saison/highlights/saison-2013/14/testspiele/page/332--4--.html"
 url = "http://www.s04.tv"
 doc = getUrl(url)
 buildVideoDir(url, doc)
+
+
 """
-
-
 url = "http://www.s04.tv/de/saison/highlights/saison-2011/12/dfb-pokal/mp4migration/110531_pokallights1_neu/page/116---262-.html"
 #url = "http://www.s04.tv/de/saison/highlights/saison-2013/14/testspiele/mp4/130729_lokleipzig_schalke_s04tv/page/335---323-.html"
 doc = getUrl(url)
 getVideoUrl(url)
+"""

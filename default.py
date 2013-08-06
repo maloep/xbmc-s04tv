@@ -148,6 +148,8 @@ def buildVideoDir(url, doc):
         xbmc.log(missingelementtext%'article')
         return
     
+    origUrl = url
+    
     for article in articles:
                 
         div = article.find('div')
@@ -157,12 +159,15 @@ def buildVideoDir(url, doc):
         
         flag = div['class']
         
-        #for some reason findNextSibling does not work here
-        p = div.findAllNext('p', limit=1)
-        if(not p):
-            xbmc.log(missingelementtext%'p')
-            continue
-        date = p[0].text
+        #for some reason findNextSibling does not work here and contents is not set properly
+        #HACK: dates are not set properly on home page
+        date = ''
+        if(origUrl.find('home') < 0):
+            p = div.findAllNext('p', limit=1)
+            if(not p):
+                xbmc.log(missingelementtext%'p')
+            else:
+                date = p[0].text
                 
         img = div.findAllNext('img', limit=1)
         if(not img):
@@ -190,6 +195,7 @@ def buildVideoDir(url, doc):
         if(not span):
             xbmc.log(missingelementtext%'span')
             continue
+        
         title = ''
         for text in span.contents:
             if(type(text) != Tag):
@@ -197,7 +203,12 @@ def buildVideoDir(url, doc):
                     title = title +': '
                 title = title +text
                 
-        if(not hidedate):
+        #only required for homescreen
+        span2 = span.nextSibling
+        if(span2):
+            title = title +': ' +span2.text
+                
+        if(not hidedate and date != ''):
             title = title + ' (%s)'%date
                 
         extraInfo = {}
