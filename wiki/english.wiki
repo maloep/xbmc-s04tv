@@ -1,0 +1,34 @@
+*XBMC* is an award-winning free and open source (GPL) software media player and entertainment hub for digital media. XBMC is available for Linux, OSX, Windows, iOS and Android. If you don't know XBMC check out [http://www.xbmc.org xbmc.org] for more information.
+
+*S04tv* is the online video portal of german soccer team FC Schalke 04. It provides all matches of S04 re-Live: full-length video of a match is available 15 minutes after the match has ended. Additionally you can view highlights of all games (including tryouts), interviews and other specials.
+
+Lots of videos are available for free. But most of the videos (especially re-Live matches)  require an account on http://www.s04.tv (6 months - 22,95 EUR, 12 months 39,95 EUR). Users outside of Germany should fill out the contact form on the S04tv page (you have to transfer the money in advance).
+
+*Screenshots*
+
+On first launch you can see the categories of S04.tv videos
+http://xbmc-s04tv.googlecode.com/files/screen_home_640x480.jpg
+
+Videos are flagged with [FREE/EXCL] to identify which videos are available without account
+http://xbmc-s04tv.googlecode.com/files/screen_videos_640x480.jpg
+
+You can enter your account data and edit other settings in addon settings
+http://xbmc-s04tv.googlecode.com/files/screen_settings_640x480.jpg
+
+*Installation via Repo Browser (recommended)*
+  * Go to XBMCs Addon Browser: System -> Add-ons -> Get Add-ons -> XBMC.org Add-ons -> Video Add-ons --> S04tv
+  * Choose Install
+
+
+*Installation via zip file*
+  * Download zip file from [http://xbmc-s04tv.googlecode.com/files/plugin.video.s04tv-3.0.0.zip here]
+  * In XBMC go to System -> Add-ons -> Install from zip file
+  * Browse to downloaded zip file and select OK
+
+
+*Usage*
+  * Without valid S04.tv user account you can only watch videos that are flagged with [FREE].
+  * If you already registered at www.s04tv.de you can enter your credentials in plugin settings. Go to Videos -> Add-ons, highlight S04tv and select "Menu" on the remote (or press "C" on the keyboard) to launch the context menu. Select "Add-on settings" and enter your username and password. On next launch all videos will be available.
+  * In plugin settings you can also choose video quality and choose if you want to see the [FREE/EXCL] flag and/or the date in video titles or if you want to hide exclusive videos.
+
+The addon is available in german and english language but video titles and the videos themselves are all german. Anyway, the re-Live option might be interesting for international Schalke fans, too.
