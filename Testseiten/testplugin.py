@@ -293,7 +293,7 @@ getVideoUrl(url)
 """
 
 import re
-line = 'changeVideoPage(0, 181)'
+line = 'changeVideoPage(1, 181)'
 match_res=re.compile('changeVideoPage\(0,(.+)\)', re.DOTALL).findall(line)
 res = (int)(match_res[0])
 print('res = ' +str(res))
