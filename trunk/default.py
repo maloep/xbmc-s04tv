@@ -44,11 +44,13 @@ missingelementtext = "Missing element '%s'. Maybe the site structure has changed
 
 videoquality = __addon__.getSetting('videoquality')
 if videoquality == 'low':
-    max_bw = 551000
+    max_res = 480
 elif videoquality == 'mid':
-    max_bw = 1982000
+    max_res = 640
 elif videoquality == 'high':
-    max_bw = 3216000
+    max_res = 960
+elif videoquality == 'hd':
+    max_res = 1280
 
 
 def buildHomeDir(url, doc):
@@ -153,6 +155,10 @@ def buildSubSubDir(url, doc):
 def buildVideoDir(url, doc):
     xbmc.log('buildVideoDir')
     
+    xbmc.log('url = ' +url)
+    xbmc.log('doc = ' +doc)
+        
+    
     #allow sorting of video titles
     xbmcplugin.addSortMethod(thisPlugin, xbmcplugin.SORT_METHOD_UNSORTED)    
     xbmcplugin.addSortMethod(thisPlugin, xbmcplugin.SORT_METHOD_DATE)
@@ -161,6 +167,18 @@ def buildVideoDir(url, doc):
     hideexclusive = __addon__.getSetting('hideexclusivevideos').upper() == 'TRUE'
     hideflag = __addon__.getSetting('hidefreeexclflag').upper() == 'TRUE'
     hidedate = __addon__.getSetting('hidedate').upper() == 'TRUE'
+    
+    #paging
+    pageid = 0
+    page = 0
+    match_page = re.compile('http://www.s04.tv/cache/TV/pages/videoverteil_(.+)_(.+).htm', re.DOTALL).findall(url)
+    if(match_page):
+        pageid = match_page[0][0]
+        page = (int)(match_page[0][1])
+        
+    if(page > 1):
+        addDir('Vorherige Seite', 'http://www.s04.tv/cache/TV/pages/videoverteil_%s_%s.html'%(pageid, page - 1), 3, '')
+    
     
     soup = BeautifulSoup(''.join(doc))
     articles = soup.findAll('article')
@@ -246,6 +264,18 @@ def buildVideoDir(url, doc):
                 
         url = BASE_URL + url
         addLink(title, url, 4, imageUrl, date, extraInfo)
+    
+    #<ul class="paging">
+    paging = soup.find('ul', attrs={'class': 'paging'})
+    if(paging and not match_page):
+        a = paging.find('a')
+        onclick = a['onclick']
+        match_page = re.compile('changeVideoPage\(0,(.+)\)', re.DOTALL).findall(onclick) 
+        pageid = (int)(match_page[0])
+        addDir('Naechste Seite', 'http://www.s04.tv/cache/TV/pages/videoverteil_%s_%s.html'%(pageid, 2), 3, '')
+    
+    elif(match_page):
+        addDir('Naechste Seite', 'http://www.s04.tv/cache/TV/pages/videoverteil_%s_%s.html'%(pageid, page + 1), 3, '')
 
 
 
@@ -299,20 +329,23 @@ def getVideoUrl(url, doc):
 
     m3u8_url = match_new_url[0].replace('/z/','/i/').replace('manifest.f4m','master.m3u8')+'?hdnea='+match_new_auth[0]+'&g='+char_gen(12)+'&hdcore=3.2.0'
     response=getUrl(m3u8_url)
-    
     match_sec_m3u8=re.compile('http(.+?)null=', re.DOTALL).findall(response)
     
     lines = response.split('\n')
     choose_url = False    
-    stored_bw = 0
+    stored_res = 0
     
+    xbmc.log('max_res = ' +str(max_res))
     for line in lines:
         if '#EXT-X-STREAM-INF' in line:
-            match_bw=re.compile('BANDWIDTH=(.+?),', re.DOTALL).findall(line)
-            bw = int(match_bw[0])
-            if bw > stored_bw and bw <= max_bw:
+            match_res=re.compile('RESOLUTION=(.+?)x', re.DOTALL).findall(line)
+            if(match_res):
+                res = (int)(match_res[0])
+                xbmc.log('res = ' +str(res))
+            if res > stored_res and res <= max_res:
                 choose_url = True
-                stored_bw = bw
+                stored_res = res
+                xbmc.log('new res = ' +str(stored_res))
         elif choose_url == True:
             sec_m3u8 = line
             choose_url = False
