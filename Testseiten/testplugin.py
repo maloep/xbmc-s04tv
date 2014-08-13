@@ -278,12 +278,12 @@ doc = getUrl(url)
 buildSubSubDir(url, doc)
 """
 
-
+"""
 #url = "http://www.s04.tv/de/saison/highlights/saison-2013/14/testspiele/page/332--4--.html"
 url = "http://www.s04.tv"
 doc = getUrl(url)
 buildVideoDir(url, doc)
-
+"""
 
 """
 url = "http://www.s04.tv/de/saison/highlights/saison-2011/12/dfb-pokal/mp4migration/110531_pokallights1_neu/page/116---262-.html"
@@ -291,3 +291,9 @@ url = "http://www.s04.tv/de/saison/highlights/saison-2011/12/dfb-pokal/mp4migrat
 doc = getUrl(url)
 getVideoUrl(url)
 """
+
+import re
+line = 'changeVideoPage(0, 181)'
+match_res=re.compile('changeVideoPage\(0,(.+)\)', re.DOTALL).findall(line)
+res = (int)(match_res[0])
+print('res = ' +str(res))
