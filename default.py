@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Malte Loepmann (maloep@googlemail.com)
+# Copyright (C) 2014 Malte Loepmann (maloep@googlemail.com)
 #
 # This program is free software; you can redistribute it and/or modify it under the terms 
 # of the GNU General Public License as published by the Free Software Foundation; 
@@ -55,7 +55,6 @@ elif videoquality == 'hd':
 
 def buildHomeDir(url, doc):
     xbmc.log('buildHomeDir')
-    
     path = xbmc.translatePath('special://profile/addon_data/%s' %(PLUGINID))
 
     if not os.path.exists(path):
@@ -153,11 +152,7 @@ def buildSubSubDir(url, doc):
 
 
 def buildVideoDir(url, doc):
-    xbmc.log('buildVideoDir')
-    
-    xbmc.log('url = ' +url)
-    xbmc.log('doc = ' +doc)
-        
+    xbmc.log('buildVideoDir')    
     
     #allow sorting of video titles
     xbmcplugin.addSortMethod(thisPlugin, xbmcplugin.SORT_METHOD_UNSORTED)    
@@ -167,18 +162,6 @@ def buildVideoDir(url, doc):
     hideexclusive = __addon__.getSetting('hideexclusivevideos').upper() == 'TRUE'
     hideflag = __addon__.getSetting('hidefreeexclflag').upper() == 'TRUE'
     hidedate = __addon__.getSetting('hidedate').upper() == 'TRUE'
-    
-    #paging
-    pageid = 0
-    page = 0
-    match_page = re.compile('http://www.s04.tv/cache/TV/pages/videoverteil_(.+)_(.+).htm', re.DOTALL).findall(url)
-    if(match_page):
-        pageid = match_page[0][0]
-        page = (int)(match_page[0][1])
-        
-    if(page > 1):
-        addDir('Vorherige Seite', 'http://www.s04.tv/cache/TV/pages/videoverteil_%s_%s.html'%(pageid, page - 1), 3, '')
-    
     
     soup = BeautifulSoup(''.join(doc))
     articles = soup.findAll('article')
@@ -190,6 +173,14 @@ def buildVideoDir(url, doc):
     
     for article in articles:
                 
+        #HACK: ignore related videos
+        try:
+            id = article['id']
+            if(id and id.startswith('rel_vid')):
+                continue
+        except:
+            pass
+                
         div = article.find('div')
         if(not div):
             xbmc.log(missingelementtext%'div')
@@ -198,7 +189,6 @@ def buildVideoDir(url, doc):
         flag = div['class']
         
         #for some reason findNextSibling does not work here and contents is not set properly
-        #HACK: dates are not set properly on home page
         date = ''
         if(origUrl.find('home') < 0):
             p = div.findAllNext('p', limit=1)
@@ -265,18 +255,23 @@ def buildVideoDir(url, doc):
         url = BASE_URL + url
         addLink(title, url, 4, imageUrl, date, extraInfo)
     
-    #<ul class="paging">
-    paging = soup.find('ul', attrs={'class': 'paging'})
-    if(paging and not match_page):
-        a = paging.find('a')
-        onclick = a['onclick']
-        match_page = re.compile('changeVideoPage\(0,(.+)\)', re.DOTALL).findall(onclick) 
-        pageid = (int)(match_page[0])
-        addDir('Naechste Seite', 'http://www.s04.tv/cache/TV/pages/videoverteil_%s_%s.html'%(pageid, 2), 3, '')
-    
-    elif(match_page):
-        addDir('Naechste Seite', 'http://www.s04.tv/cache/TV/pages/videoverteil_%s_%s.html'%(pageid, page + 1), 3, '')
-
+    #paging
+    pageid = 0
+    page = 0
+    match_page = re.compile('http://www.s04.tv/cache/TV/pages/videoverteil_(.+)_(.+).htm', re.DOTALL).findall(origUrl)
+    if(match_page):
+        pageid = match_page[0][0]
+        page = (int)(match_page[0][1])
+        addDir(__language__(30003), 'http://www.s04.tv/cache/TV/pages/videoverteil_%s_%s.html'%(pageid, page + 1), 3, '')
+    else:
+        paging = soup.find('ul', attrs={'class': 'paging'})
+        if(paging):
+            a = paging.find('a')
+            onclick = a['onclick']
+            match_page = re.compile('changeVideoPage\(0,(.+)\)', re.DOTALL).findall(onclick)
+            pageid = (int)(match_page[0])
+            addDir(__language__(30003), 'http://www.s04.tv/cache/TV/pages/videoverteil_%s_%s.html'%(pageid, 2), 3, '')
+        
 
 
 def getVideoUrl(url, doc):
@@ -352,10 +347,6 @@ def getVideoUrl(url, doc):
     
     listitem = xbmcgui.ListItem(path=sec_m3u8)
     return xbmcplugin.setResolvedUrl(thisPlugin, True, listitem)
-            
-
-def char_gen(size=1, chars=string.ascii_uppercase):
-    return ''.join(random.choice(chars) for x in range(size))
 
 
 def addDir(name, url, mode, iconimage):
@@ -423,19 +414,25 @@ def login():
     
 
 def getUrl(url):
-            
         url = url.replace('&amp;','&')
         url = url.replace('&#38;','&')
         xbmc.log('Get url: '+url)
         browser.set_handle_robots(False)
-        browser.open(url)        
-        response = browser.response().read()
-        
+        try:
+            browser.open(url)        
+            response = browser.response().read()
+        except Exception, (exc):
+            xbmc.log('Error while opening url: ' +str(exc))
+            return ''
         return response
     
 
 def num_gen(size=1, chars=string.digits):
         return ''.join(random.choice(chars) for x in range(size))
+
+
+def char_gen(size=1, chars=string.ascii_uppercase):
+    return ''.join(random.choice(chars) for x in range(size))
 
 
 def runPlugin(url, doc):
