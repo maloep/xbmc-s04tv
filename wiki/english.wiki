@@ -21,7 +21,7 @@ http://xbmc-s04tv.googlecode.com/files/screen_settings_640x480.jpg
 
 
 *Installation via zip file*
-  * Download zip file from [http://xbmc-s04tv.googlecode.com/files/plugin.video.s04tv-3.0.0.zip here]
+  * Download zip file from [https://xbmc-s04tv.googlecode.com/svn/release/plugin.video.s04tv-3.0.1.zip here]
   * In XBMC go to System -> Add-ons -> Install from zip file
   * Browse to downloaded zip file and select OK
 
