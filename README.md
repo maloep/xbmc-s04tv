@@ -1,4 +1,4 @@
-[english version](../../wiki/english.md)
+[english version](../../wiki/english)
 
 
 **XBMC** ist ein kostenloser Open Source (GPL) Software Mediaplayer zum Verwalten und Abspielen von digitalen Medien. XBMC unterstützt Linux, OSX, Windows, iOS und Android. Wenn Du XBMC noch nicht kennst, besuche [xbmc.org](http://www.xbmc.org) für mehr Informationen.
