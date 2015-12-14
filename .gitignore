@@ -1,0 +1,6 @@
+*.md
+.project
+.pydevproject
+.settings
+Testseiten
+resources/lib
