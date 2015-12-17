@@ -1,4 +1,4 @@
-3.0.2 (2015/08)
+3.0.2 (2015/12)
 - update due to website changes
 - play free content via youtube plugin
 
