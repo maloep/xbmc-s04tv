@@ -380,19 +380,45 @@ def getVideoUrl(url, doc):
 
     match_timestamp=re.compile('timestamp="(.+?)"', re.DOTALL).findall(response)
     timestamp = match_timestamp[0]
+    
+    wsUrl = 'http://www.s04.tv/service/video_xml.php?videoid='+streamid+'&partnerid='+partnerid+'&language='+sprache
 
-    wsUrl = 'http://www.s04.tv/webservice/video_xml.php?play='+streamid+'&partner='+partnerid+'&portal='+portalid+'&v5ident=&lang='+sprache
-    response=getUrl(wsUrl)
+    response = getUrl(wsUrl)
     
-    match_url=re.compile('<url>(.+?)<', re.DOTALL).findall(response)
+    jsonResult = json.loads(response)
     
-    response=getUrl(match_url[0]+'&timestamp='+timestamp+'&auth='+auth)
+    responseVideo = jsonResult['video']
+    
+    if(responseVideo is None):
+        xbmc.log('Error in response: tag video not found')
+        return
+    
+    streamAccess = responseVideo['streamAccess']
+    if(streamAccess is None):
+        xbmc.log('Error in response: tag streamAccess not found')
+        return
+        
+    responseStreamAccess=getUrl('http://www.s04.tv' +streamAccess)
+    
+    responseVideoXml = json.loads(responseStreamAccess)
+    responseData = responseVideoXml['data']
+    if(responseData is None):
+        xbmc.log('Error in response: tag responseData not found')
+        return
+    
+    streamAccessUrl = responseData['stream-access'][0]
+    xbmc.log('streamAccessUrl: ' +streamAccessUrl)
+    
+    response = getUrl(streamAccessUrl)
     
     match_new_auth=re.compile('auth="(.+?)"', re.DOTALL).findall(response)
     match_new_url=re.compile('url="(.+?)"', re.DOTALL).findall(response)
 
     m3u8_url = match_new_url[0].replace('/z/','/i/').replace('manifest.f4m','master.m3u8')+'?hdnea='+match_new_auth[0]+'&g='+char_gen(12)+'&hdcore=3.2.0'
+    xbmc.log('m3u8_url: ' +m3u8_url)
+    
     response=getUrl(m3u8_url)
+    
     match_sec_m3u8=re.compile('http(.+?)null=', re.DOTALL).findall(response)
     
     lines = response.split('\n')
