@@ -14,8 +14,8 @@
 # if not, see <http://www.gnu.org/licenses/>.
 
 import xbmc, xbmcplugin, xbmcgui, xbmcaddon
-import os, sys, re, json, string
-import urllib, urllib2
+import os, sys, re, json
+import urllib
 from urlparse import *
 #import xml.etree.ElementTree as ET
 import cookielib
@@ -27,7 +27,6 @@ except ImportError:
     from html.parser import HTMLParser
 
 from BeautifulSoup import BeautifulSoup
-from BeautifulSoup import Tag
 import mechanize
 
 PLUGINNAME = 'S04tv'
@@ -73,7 +72,6 @@ def buildVideoDir(url, doc):
     
     hideexclusive = __addon__.getSetting('hideexclusivevideos').upper() == 'TRUE'
     hideflag = __addon__.getSetting('hidefreeexclflag').upper() == 'TRUE'
-    hidedate = __addon__.getSetting('hidedate').upper() == 'TRUE'
     
     soup = BeautifulSoup(''.join(doc))
     section = soup.find('section')
@@ -190,8 +188,8 @@ def getVideoUrl(url, doc):
     for key in jsonPlaylist:
         entry = jsonPlaylist[key]
         quality = entry['quality']
-        type = entry['type']
-        if(type == 'videomp4' and quality == videoquality):
+        videotype = entry['type']
+        if(videotype == 'videomp4' and quality == videoquality):
             videourl = entry['src']
             
     listitem = xbmcgui.ListItem(path=videourl)
@@ -244,14 +242,13 @@ def login():
 
     for form in br.forms():
         try:
-            form['email']
+            form['email'] = username
+            form['password'] = password
             br.form = form
             break
         except:
             pass        
-            
-    br.form['email'] = username
-    br.form['password'] = password
+        
     br.submit()
 
     response = br.response().read()
