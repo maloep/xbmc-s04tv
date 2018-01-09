@@ -69,7 +69,7 @@ def buildVideoDir(url, doc):
     xbmcplugin.addSortMethod(thisPlugin, xbmcplugin.SORT_METHOD_UNSORTED)
     #xbmcplugin.addSortMethod(thisPlugin, xbmcplugin.SORT_METHOD_DATE)
     xbmcplugin.addSortMethod(thisPlugin, xbmcplugin.SORT_METHOD_TITLE)
-    
+
     hideexclusive = __addon__.getSetting('hideexclusivevideos').upper() == 'TRUE'
     hideflag = __addon__.getSetting('hidefreeexclflag').upper() == 'TRUE'
     
@@ -252,11 +252,13 @@ def login():
     loginSuccessful = False
     response = br.response().read()
     soup = BeautifulSoup(''.join(response))
-
     for textelement in soup(text='Schalke TV KOMPLETT'):
         li = textelement.parent
-        isChecked = li.find(attrs={"li": "checked"})
-        loginSuccessful = True
+        try:
+            isChecked = li['class'] == 'checked'
+            loginSuccessful = isChecked
+        except KeyError:
+            loginSuccessful = False
 
     if(loginSuccessful):
         xbmc.log('login successful')
