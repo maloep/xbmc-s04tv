@@ -247,13 +247,18 @@ def login():
             break
         except mechanize.ControlNotFoundError:
             pass
-        
-    br.submit()
 
+    br.submit()
+    loginSuccessful = False
     response = br.response().read()
-    
-    #if there is a logout button, login was successful
-    if(response.find('Schalke TV KOMPLETT')):
+    soup = BeautifulSoup(''.join(response))
+
+    for textelement in soup(text='Schalke TV KOMPLETT'):
+        li = textelement.parent
+        isChecked = li.find(attrs={"li": "checked"})
+        loginSuccessful = True
+
+    if(loginSuccessful):
         xbmc.log('login successful')
         return True
     else:
