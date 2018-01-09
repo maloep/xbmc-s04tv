@@ -20,7 +20,7 @@ from urlparse import *
 #import xml.etree.ElementTree as ET
 import cookielib
 try:
-# Python 2.6-2.7
+    # Python 2.6-2.7
     from HTMLParser import HTMLParser
 except ImportError:
     # Python 3
@@ -35,15 +35,15 @@ BASE_URL = 'https://schalke04.de/tv/videos/'
 
 # Shared resources
 addonPath = ''
-__addon__ = xbmcaddon.Addon(id='plugin.video.s04tv')
-addonPath = __addon__.getAddonInfo('path')
+addon = xbmcaddon.Addon(id='plugin.video.s04tv')
+addonPath = addon.getAddonInfo('path')
 
 BASE_RESOURCE_PATH = os.path.join(addonPath, "resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib", "BeautifulSoup" ) )
 
 
-__language__ = __addon__.getLocalizedString
+language = addon.getLocalizedString
 thisPlugin = int(sys.argv[1])
 browser = mechanize.Browser()
 
@@ -51,7 +51,7 @@ missingelementtext = "Missing element '%s'. Maybe the site structure has changed
 
 videoquality = 'hd720'
 
-quality = __addon__.getSetting('videoquality')
+quality = addon.getSetting('videoquality')
 if quality == 'low':
     videoquality = 'small'
 elif quality == 'mid':
@@ -70,8 +70,8 @@ def buildVideoDir(url, doc):
     #xbmcplugin.addSortMethod(thisPlugin, xbmcplugin.SORT_METHOD_DATE)
     xbmcplugin.addSortMethod(thisPlugin, xbmcplugin.SORT_METHOD_TITLE)
 
-    hideexclusive = __addon__.getSetting('hideexclusivevideos').upper() == 'TRUE'
-    hideflag = __addon__.getSetting('hidefreeexclflag').upper() == 'TRUE'
+    hideexclusive = addon.getSetting('hideexclusivevideos').upper() == 'TRUE'
+    hideflag = addon.getSetting('hidefreeexclflag').upper() == 'TRUE'
     
     soup = BeautifulSoup(''.join(doc))
     section = soup.find('section')
@@ -109,7 +109,7 @@ def buildVideoDir(url, doc):
             title = HTMLParser().unescape(title)
         else:
             mode = 1
-            title = __language__(30003)
+            title = language(30003)
         
         #title = title.replace('<br>', ' - ')
         
@@ -224,12 +224,12 @@ def addLink(name, url, mode, iconimage, date, extraInfo):
 
 def login():
     
-    username = __addon__.getSetting('username')
+    username = addon.getSetting('username')
     xbmc.log('Logging in with username "%s"' %username)
-    password = __addon__.getSetting('password')
+    password = addon.getSetting('password')
     
     if(not username or not password):
-        xbmcgui.Dialog().ok(PLUGINNAME, __language__(30102), __language__(30103))
+        xbmcgui.Dialog().ok(PLUGINNAME, language(30102), language(30103))
         return False
     
     url = 'https://schalke04.de/account/login/'
@@ -265,7 +265,7 @@ def login():
         return True
     else:
         xbmc.log('login failed')
-        xbmcgui.Dialog().ok(PLUGINNAME, __language__(30100) %username.decode('utf-8'), __language__(30101))
+        xbmcgui.Dialog().ok(PLUGINNAME, language(30100) %username.decode('utf-8'), language(30101))
         return False
 
 
