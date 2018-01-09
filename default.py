@@ -64,7 +64,7 @@ elif quality == 'hd':
 
 
 def buildVideoDir(url, doc):
-    
+
     #allow sorting of video titles
     xbmcplugin.addSortMethod(thisPlugin, xbmcplugin.SORT_METHOD_UNSORTED)
     #xbmcplugin.addSortMethod(thisPlugin, xbmcplugin.SORT_METHOD_DATE)
@@ -87,7 +87,7 @@ def buildVideoDir(url, doc):
     
     for ahref in ahrefs:
         
-        url = ahref['href']        
+        url = ahref['href']
         try:
             isPayedContent = ahref['data-payed'] == 'true'
         except KeyError:
@@ -245,7 +245,7 @@ def login():
             form['password'] = password
             br.form = form
             break
-        except:
+        except mechanize.ControlNotFoundError:
             pass
         
     br.submit()
