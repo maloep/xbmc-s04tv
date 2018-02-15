@@ -133,12 +133,13 @@ def buildVideoDir(url, doc):
 def getVideoUrl(url, doc):
     xbmc.log('getVideoUrl: url=' +url)
     
+    #HACK: it seems that the new site always requires a login, even for non-payed content
     #check if we need to login
-    isPayedContent = xbmc.getInfoLabel( "ListItem.Property(isPayedContent)" ) == 'True'
-    if(isPayedContent):
-        success = login()
-        if(not success):
-            return
+    #isPayedContent = xbmc.getInfoLabel( "ListItem.Property(isPayedContent)" ) == 'True'
+    #if(isPayedContent):
+    success = login()
+    if(not success):
+        return
     
     #HACK: Free content may be hosted on youtube
     if(url.startswith("https://youtu.be/")):
@@ -154,9 +155,9 @@ def getVideoUrl(url, doc):
         xbmc.log(missingelementtext%'section')
         return
     
-    videoContainer = soup.find('div', attrs={'class': 'video-container'})
+    videoContainer = soup.find('div', attrs={'class': 'video-wrapper'})
     if(not videoContainer):
-        xbmc.log(missingelementtext%'videoContainer')
+        xbmc.log(missingelementtext%'video-wrapper')
         return
     
     dataoptions = videoContainer['data-options']
