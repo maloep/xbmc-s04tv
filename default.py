@@ -52,14 +52,12 @@ missingelementtext = "Missing element '%s'. Maybe the site structure has changed
 videoquality = 'hd720'
 
 quality = addon.getSetting('videoquality')
-if quality == 'low':
-    videoquality = 'small'
-elif quality == 'mid':
+if quality == 'mid':
     videoquality = 'medium'
 elif quality == 'high':
-    videoquality = 'mediumlarge'
-elif quality == 'hd':
     videoquality = 'hd720'
+elif quality == 'hd':
+    videoquality = 'hd1080'
 
 
 
@@ -189,7 +187,7 @@ def getVideoUrl(url, doc):
         entry = jsonPlaylist[key]
         quality = entry['quality']
         videotype = entry['type']
-        if(videotype == 'videomp4' and quality == videoquality):
+        if(quality == videoquality):
             videourl = entry['src']
             
     listitem = xbmcgui.ListItem(path=videourl)
@@ -253,21 +251,35 @@ def login():
     loginSuccessful = False
     response = br.response().read()
     soup = BeautifulSoup(''.join(response))
-    for textelement in soup(text='Schalke TV KOMPLETT'):
-        li = textelement.parent
-        try:
-            isChecked = li['class'] == 'checked'
-            loginSuccessful = isChecked
-        except KeyError:
-            loginSuccessful = False
+    
+    loginSuccessful = searchMemberStatus(soup, 'Schalke TV KOMPLETT')
+            
+    if not loginSuccessful:
+        xbmc.log('No Schalke TV subscription. Checking member status.')
+        loginSuccessful = searchMemberStatus(soup, 'Schalke 04 Vereinsmitglied')
 
-    if(loginSuccessful):
+    if loginSuccessful:
         xbmc.log('login successful')
         return True
     else:
         xbmc.log('login failed')
         xbmcgui.Dialog().ok(PLUGINNAME, language(30100) %username.decode('utf-8'), language(30101))
         return False
+
+
+def searchMemberStatus(soup, status):
+    loginSuccessful = False
+    
+    for textelement in soup(text=status):
+        ahref = textelement.parent
+        li = ahref.parent
+        try:
+            isChecked = li['class'] == 'checked'
+            loginSuccessful = isChecked
+        except KeyError:
+            loginSuccessful = False
+            
+    return loginSuccessful
 
 
 def getUrl(url):
