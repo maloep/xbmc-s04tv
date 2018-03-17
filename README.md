@@ -3,7 +3,7 @@
 
 **Kodi** ist ein kostenloser Open Source (GPL) Software Mediaplayer zum Verwalten und Abspielen von digitalen Medien. Kodi läuft unter Linux, OSX, Windows, iOS und Android. Wenn Du Kodi noch nicht kennst, besuche [kodi.tv](https://kodi.tv/) für mehr Informationen.
 
-**S04tv** ist das Online Video Portal des FC Schalke 04. Jedes Spiel des S04 kann auf https://schalke04.de/tv/ re-Live in voller Länge angesehen werden. In der Regel sind die Spiele 15 Minuten nach Spielende verfügbar. Zusätzlich gibt es News (Montags bis Freitags ab 18 Uhr, außer an Spieltagen), Interviews und Sonderberichte. Viele Berichte sind kostenloas verfügbar, für die meisten Berichte (insbesondere die re-Live Spiele) ist jedoch ein kostenpflichtiger Benutzer-Account notwendig. Einige Videos sind für Schalke-Mitglieder kostenlos verfügbar, exklusive Inhalte benötigen ein kostenpflichtiges Abo (19,04 € für 12 Monate).
+**S04tv** ist das Online Video Portal des FC Schalke 04. Jedes Spiel des S04 kann auf https://schalke04.de/tv/ re-Live in voller Länge angesehen werden. In der Regel sind die Spiele 15 Minuten nach Spielende verfügbar. Zusätzlich gibt es Zusammenfassungen, Pressekonferenzen, Interviews und weitere Berichte. Viele Beiträge sind kostenloas verfügbar, für einige Videos (insbesondere die re-Live Spiele) ist jedoch ein kostenpflichtiger Benutzer-Account notwendig (19,04 € für 12 Monate).
 
 
 **Installation via Repo Browser**
