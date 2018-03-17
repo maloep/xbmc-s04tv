@@ -1,6 +1,10 @@
+*.py[cod]
 *.md
+Testseiten
+resources/lib
+
+# Files created by IDE
+.idea/
 .project
 .pydevproject
 .settings
-Testseiten
-resources/lib

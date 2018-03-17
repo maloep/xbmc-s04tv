@@ -130,14 +130,19 @@ def buildVideoDir(url, doc):
 
 def getVideoUrl(url, doc):
     xbmc.log('getVideoUrl: url=' +url)
-    
-    #HACK: it seems that the new site always requires a login, even for non-payed content
-    #check if we need to login
-    #isPayedContent = xbmc.getInfoLabel( "ListItem.Property(isPayedContent)" ) == 'True'
-    #if(isPayedContent):
-    success = login()
-    if(not success):
+
+    is_logged_in, has_schalke_tv = login()
+    if not is_logged_in:
         return
+
+    isPayedContent = xbmc.getInfoLabel( "ListItem.Property(isPayedContent)" ) == 'True'
+    #payedContent requires payed Schalke TV subscription
+    if(isPayedContent):
+        if not has_schalke_tv:
+            xbmc.log("This video requires payed Schalke TV subscription")
+            xbmcgui.Dialog().ok(PLUGINNAME, language(30104), language(30105))
+            return
+
     
     #HACK: Free content may be hosted on youtube
     if(url.startswith("https://youtu.be/")):
@@ -229,7 +234,7 @@ def login():
     
     if(not username or not password):
         xbmcgui.Dialog().ok(PLUGINNAME, language(30102), language(30103))
-        return False
+        return False, False
     
     url = 'https://schalke04.de/account/login/'
     
@@ -248,23 +253,46 @@ def login():
             pass
 
     br.submit()
-    loginSuccessful = False
     response = br.response().read()
     soup = BeautifulSoup(''.join(response))
-    
-    loginSuccessful = searchMemberStatus(soup, 'Schalke TV KOMPLETT')
-            
-    if not loginSuccessful:
-        xbmc.log('No Schalke TV subscription. Checking member status.')
-        loginSuccessful = searchMemberStatus(soup, 'Schalke 04 Vereinsmitglied')
 
-    if loginSuccessful:
-        xbmc.log('login successful')
-        return True
-    else:
+    script = soup.find('script')
+    if (not script):
+        xbmc.log(missingelementtext % 'script')
+        return False, False
+
+    """
+    script is expected to look like this:
+    <script>
+      dataLayer = [{
+        'userID': 171661,
+        'IsLoggedIn': true,
+        'hasSchalkeTV': true,
+        'hasSchalkeNewsletter': false,
+        'isAge': 42,
+        'isGender': 'mr',
+        'hasHospitality': false,
+        'hasPress': false,
+        'hasFanclub': false,
+        'hasTvAboHighlights': false,
+      }];
+    </script>
+    """
+    pattern = "'IsLoggedIn': (?P<is_logged_in>.*),\s*'hasSchalkeTV': (?P<has_schalke_tv>.*),\s*'hasSchalkeNewsletter'"
+    result = re.search(pattern, script.text)
+
+    is_logged_in = result.group('is_logged_in') == 'true'
+    has_schalke_tv = result.group('has_schalke_tv') == 'true'
+
+    xbmc.log('is_logged_in = %s' %is_logged_in)
+    xbmc.log('has_schalke_tv = %s' % has_schalke_tv)
+
+    if not is_logged_in:
         xbmc.log('login failed')
         xbmcgui.Dialog().ok(PLUGINNAME, language(30100) %username.decode('utf-8'), language(30101))
-        return False
+        return False, False
+
+    return is_logged_in, has_schalke_tv
 
 
 def searchMemberStatus(soup, status):
