@@ -6,7 +6,7 @@
 **S04tv** ist das Online Video Portal des FC Schalke 04. Jedes Spiel des S04 kann auf https://schalke04.de/tv/ re-Live in voller Länge angesehen werden. In der Regel sind die Spiele 15 Minuten nach Spielende verfügbar. Zusätzlich gibt es News (Montags bis Freitags ab 18 Uhr, außer an Spieltagen), Interviews und Sonderberichte. Viele Berichte sind kostenloas verfügbar, für die meisten Berichte (insbesondere die re-Live Spiele) ist jedoch ein kostenpflichtiger Benutzer-Account notwendig. Einige Videos sind für Schalke-Mitglieder kostenlos verfügbar, exklusive Inhalte benötigen ein kostenpflichtiges Abo (19,04 € für 12 Monate).
 
 
-**Installation via Repo Browser **
+**Installation via Repo Browser**
   * In Kodi gehe zu: System -> Add-ons -> Get Add-ons -> Kodi Add-ons -> Video Add-ons --> S04tv
   * Klicke auf Install
 
