@@ -265,7 +265,7 @@ def login():
     script is expected to look like this:
     <script>
       dataLayer = [{
-        'userID': 171661,
+        'userID': 123456,
         'IsLoggedIn': true,
         'hasSchalkeTV': true,
         'hasSchalkeNewsletter': false,
