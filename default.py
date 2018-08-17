@@ -147,7 +147,8 @@ def getVideoUrl(url, doc):
     #HACK: Free content may be hosted on youtube
     if(url.startswith("https://youtu.be/")):
         videoId = url.replace("https://youtu.be/", "")
-        url='plugin://plugin.video.youtube/?action=play_video&videoid=' +videoId
+        url='plugin://plugin.video.youtube/play/?video_id=' +videoId
+
         listitem = xbmcgui.ListItem(path=url)
         return xbmcplugin.setResolvedUrl(thisPlugin, True, listitem)
     
@@ -203,7 +204,8 @@ def addDir(name, url, mode, iconimage):
     parameters = {'url' : url.encode('utf-8'), 'mode' : str(mode), 'name' : name.encode('utf-8')}
     u = sys.argv[0] +'?' +urllib.urlencode(parameters)
     ok = True
-    listitem = xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
+    listitem = xbmcgui.ListItem(name)
+    listitem.setArt({'icon': 'DefaultFolder.png', 'thumb': iconimage})
     listitem.setInfo(type="Video", infoLabels={"Title": name})
     ok = xbmcplugin.addDirectoryItem(thisPlugin, u, listitem, isFolder=True)
     return ok
@@ -213,7 +215,8 @@ def addLink(name, url, mode, iconimage, date, extraInfo):
     parameters = {'url' : url.encode('utf-8'), 'mode' : str(mode), 'name' : name.encode('utf-8')}
     u = sys.argv[0] +'?' +urllib.urlencode(parameters)
     ok = True
-    listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
+    listitem = xbmcgui.ListItem(name)
+    listitem.setArt({'icon': 'DefaultVideo.png', 'thumb': iconimage})
     if(date != ''):
         listitem.setInfo(type="Video", infoLabels={"Title": name, "Date": date})
     else:
@@ -318,7 +321,7 @@ def getUrl(url):
         try:
             browser.open(url)
             response = browser.response().read()
-        except Exception, (exc):
+        except Exception as exc:
             xbmc.log('Error while opening url: ' +str(exc))
             return ''
         return response
@@ -357,9 +360,9 @@ try:
 except:
     pass
 
-print "Mode: "+str(mode)
-print "URL: "+str(url)
-print "Name: "+str(name)
+xbmc.log("Mode: " +str(mode))
+xbmc.log("URL: "+str(url))
+xbmc.log("Name: "+str(name))
 
 if(url == None):
     url = BASE_URL
