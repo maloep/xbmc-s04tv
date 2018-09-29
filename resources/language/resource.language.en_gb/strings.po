@@ -80,3 +80,15 @@ msgctxt "#30105"
 msgid "Please purchase a subscription at https://schalke04.de/tv/."
 msgstr ""
 
+msgctxt "#30106"
+msgid "Choose half"
+msgstr ""
+
+msgctxt "#30107"
+msgid "Fist half"
+msgstr ""
+
+msgctxt "#30108"
+msgid "Second half"
+msgstr ""
+

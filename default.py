@@ -151,18 +151,30 @@ def getVideoUrl(url, doc):
 
         listitem = xbmcgui.ListItem(path=url)
         return xbmcplugin.setResolvedUrl(thisPlugin, True, listitem)
-    
+
     soup = BeautifulSoup(''.join(doc))
     
     section = soup.find('section')
     if(not section):
         xbmc.log(missingelementtext%'section')
         return
-    
-    videoContainer = soup.find('div', attrs={'class': 'video-wrapper'})
+
+    videoContainer = soup.find('div', attrs={'class': 'site-schalketv video-wrapper'})
     if(not videoContainer):
-        xbmc.log(missingelementtext%'video-wrapper')
-        return
+        xbmc.log(missingelementtext%'site-schalketv video-wrapper')
+
+        #HACK: they use another player for re-live matches
+        videoContainer = soup.find('div', attrs={'class': 'site-schalketv jupiter-video video-wrapper'})
+        if videoContainer:
+            return get_match_url(videoContainer)
+        else:
+            xbmc.log(missingelementtext % 'site-schalketv jupiter-video video-wrapper')
+
+            #HACK: new videos also use another video-wrapper
+            videoContainer = soup.find('div', attrs={'class': 'site-schalketv threeq-video video-wrapper'})
+            if (not videoContainer):
+                xbmc.log(missingelementtext % 'site-schalketv threeq-video video-wrapper')
+                return
     
     dataoptions = videoContainer['data-options']
     if(not dataoptions):
@@ -198,6 +210,55 @@ def getVideoUrl(url, doc):
             
     listitem = xbmcgui.ListItem(path=videourl)
     return xbmcplugin.setResolvedUrl(thisPlugin, True, listitem)
+
+
+def get_match_url(videoContainer):
+    xbmc.log('Begin get_match_url')
+    dataoptions = videoContainer['data-options']
+    if (not dataoptions):
+        xbmc.log(missingelementtext % 'data-options')
+        return
+
+    #choose first or second half
+    jsonResult = json.loads(dataoptions)
+    assets = jsonResult['assets']
+    first = assets['first']
+    second = assets['second']
+
+    listitem_first = xbmcgui.ListItem(language(30107), first)
+    listitem_second = xbmcgui.ListItem(language(30108), second)
+    options = [listitem_first, listitem_second]
+    index = xbmcgui.Dialog().select(language(30106), options)
+    if index >= 0:
+        item = options[index]
+    dataId = item.getLabel2()
+
+    playoutUrl = 'https://playout.3qsdn.com/' + dataId + '?js=true&data-id=' + dataId + '&container=sdnPlayer_player&autoplay=true&muted=false&width=100%25&height=100%25&controlbar=false'
+
+    response = getUrl(playoutUrl)
+
+    match_playlist = re.compile('playlist: \((.+?)\)', re.DOTALL).findall(response)
+    playlist = match_playlist[0]
+
+    quote_keys_regex = r'([\{\s,])(\w+)(:)'
+    playlist = re.sub(quote_keys_regex, r'\1"\2"\3', playlist)
+
+    playlist = playlist.replace("'", '"')
+    playlist = playlist.replace("\\x2F", '')
+
+    videourl = ''
+
+    jsonPlaylist = json.loads(playlist)
+    for key in jsonPlaylist:
+        entry = jsonPlaylist[key]
+        quality = entry['quality']
+        videotype = entry['type']
+        if (quality == videoquality):
+            videourl = entry['src']
+
+    listitem = xbmcgui.ListItem(path=videourl)
+    return xbmcplugin.setResolvedUrl(thisPlugin, True, listitem)
+
     
 
 def addDir(name, url, mode, iconimage):
@@ -230,7 +291,7 @@ def addLink(name, url, mode, iconimage, date, extraInfo):
 
 
 def login():
-    
+
     username = addon.getSetting('username')
     xbmc.log('Logging in with username "%s"' %username)
     password = addon.getSetting('password')
@@ -244,6 +305,7 @@ def login():
     cj = cookielib.CookieJar()
     br = mechanize.Browser()
     br.set_cookiejar(cj)
+    br.set_handle_robots(False)
     br.open(url)
 
     for form in br.forms():

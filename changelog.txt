@@ -1,5 +1,6 @@
-3.1.8 (2018/08)
-- version bump for Jarvis
+3.2.0 (2018/09)
+- update due to website changes
+- choose first or second half for re-live matches
 
 3.1.7 (2018/08)
 - marked as broken for Gotham
