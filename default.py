@@ -17,7 +17,7 @@ import xbmc, xbmcplugin, xbmcgui, xbmcaddon
 import os, sys, re, json
 import urllib
 import uuid
-from urlparse import *
+from urlparse import parse_qs, urlparse
 #import xml.etree.ElementTree as ET
 import cookielib
 try:
@@ -98,7 +98,7 @@ def buildVideoDir(url, doc):
                
         h3 = ahref.find('h3')
         mode = 2
-        if(h3 != None):
+        if(h3 is not None):
             title = ''
             parts = str(h3).decode('utf-8').split()
             for part in parts:
@@ -181,7 +181,6 @@ def getVideoUrl(url, doc):
     for key in jsonPlaylist:
         entry = jsonPlaylist[key]
         quality = entry['quality']
-        videotype = entry['type']
         if (quality == videoquality):
             videourl = entry['src']
 
@@ -281,7 +280,7 @@ def getUrl(url):
 
 def runPlugin(url, doc):
     
-    if mode==None or doc==None or len(doc)<1:
+    if mode is None or doc is None or len(doc)<1:
         buildVideoDir(url, doc)
        
     elif mode==1:
@@ -315,7 +314,7 @@ xbmc.log("Mode: " +str(mode))
 xbmc.log("URL: "+str(url))
 xbmc.log("Name: "+str(name))
 
-if(url == None):
+if(url is None):
     url = BASE_URL
 
 doc = getUrl(url)
