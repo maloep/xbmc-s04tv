@@ -16,6 +16,7 @@
 import xbmc, xbmcplugin, xbmcgui, xbmcaddon
 import os, sys, re, json
 import urllib
+import uuid
 from urlparse import *
 #import xml.etree.ElementTree as ET
 import cookielib
@@ -93,7 +94,7 @@ def buildVideoDir(url, doc):
         
         img = ahref.find('img')
         if(img):
-            imageUrl = img['src']
+            imageUrl = img['data-lazy-src']
                
         h3 = ahref.find('h3')
         mode = 2
@@ -108,8 +109,6 @@ def buildVideoDir(url, doc):
         else:
             mode = 1
             title = language(30003)
-        
-        #title = title.replace('<br>', ' - ')
         
         extraInfo = {}
         if not isPayedContent:
@@ -142,7 +141,6 @@ def getVideoUrl(url, doc):
             xbmc.log("This video requires payed Schalke TV subscription")
             xbmcgui.Dialog().ok(PLUGINNAME, language(30104), language(30105))
             return
-
     
     #HACK: Free content may be hosted on youtube
     if(url.startswith("https://youtu.be/")):
@@ -152,88 +150,19 @@ def getVideoUrl(url, doc):
         listitem = xbmcgui.ListItem(path=url)
         return xbmcplugin.setResolvedUrl(thisPlugin, True, listitem)
 
-    soup = BeautifulSoup(''.join(doc))
-    
-    section = soup.find('section')
-    if(not section):
-        xbmc.log(missingelementtext%'section')
+    #find the url to the dataoptions markup
+    match_json_url = re.compile("url: '(.+)' \+").findall(doc)
+    if not match_json_url:
+        xbmc.log(missingelementtext % 'url: ')
         return
 
-    videoContainer = soup.find('div', attrs={'class': 'site-schalketv video-wrapper'})
-    if(not videoContainer):
-        xbmc.log(missingelementtext%'site-schalketv video-wrapper')
+    json_url = 'https://schalke04.de' +match_json_url[0]+str(uuid.uuid1())
+    response = getUrl(json_url)
 
-        #HACK: they use another player for re-live matches
-        videoContainer = soup.find('div', attrs={'class': 'site-schalketv jupiter-video video-wrapper'})
-        if videoContainer:
-            return get_match_url(videoContainer)
-        else:
-            xbmc.log(missingelementtext % 'site-schalketv jupiter-video video-wrapper')
+    result = re.compile('data-id.+"(.+)",.+"container').findall(response)
+    dataId = result[0].replace("\\", "")
 
-            #HACK: new videos also use another video-wrapper
-            videoContainer = soup.find('div', attrs={'class': 'site-schalketv threeq-video video-wrapper'})
-            if (not videoContainer):
-                xbmc.log(missingelementtext % 'site-schalketv threeq-video video-wrapper')
-                return
-    
-    dataoptions = videoContainer['data-options']
-    if(not dataoptions):
-        xbmc.log(missingelementtext%'data-options')
-        return
-        
-    jsonResult = json.loads(dataoptions)
-    jsonResultPlayerOptions = jsonResult['playerOptions']
-    dataId = jsonResultPlayerOptions['data-id']
-    
-    playoutUrl = 'https://playout.3qsdn.com/' +dataId +'?js=true&skin=s04&data-id=' +dataId +'&container=sdnPlayer_player&preview=false&width=100%25&height=100%25'
-    
-    response=getUrl(playoutUrl)
-    
-    match_playlist=re.compile('playlist: \((.+?)\)', re.DOTALL).findall(response)
-    playlist = match_playlist[0]
-    
-    quote_keys_regex = r'([\{\s,])(\w+)(:)'
-    playlist = re.sub(quote_keys_regex, r'\1"\2"\3', playlist)
-
-    playlist = playlist.replace("'", '"')
-    playlist = playlist.replace("\\x2F", '')
-    
-    videourl = ''
-    
-    jsonPlaylist = json.loads(playlist)
-    for key in jsonPlaylist:
-        entry = jsonPlaylist[key]
-        quality = entry['quality']
-        videotype = entry['type']
-        if(quality == videoquality):
-            videourl = entry['src']
-            
-    listitem = xbmcgui.ListItem(path=videourl)
-    return xbmcplugin.setResolvedUrl(thisPlugin, True, listitem)
-
-
-def get_match_url(videoContainer):
-    xbmc.log('Begin get_match_url')
-    dataoptions = videoContainer['data-options']
-    if (not dataoptions):
-        xbmc.log(missingelementtext % 'data-options')
-        return
-
-    #choose first or second half
-    jsonResult = json.loads(dataoptions)
-    assets = jsonResult['assets']
-    first = assets['first']
-    second = assets['second']
-
-    listitem_first = xbmcgui.ListItem(language(30107), first)
-    listitem_second = xbmcgui.ListItem(language(30108), second)
-    options = [listitem_first, listitem_second]
-    index = xbmcgui.Dialog().select(language(30106), options)
-    if index >= 0:
-        item = options[index]
-    dataId = item.getLabel2()
-
-    playoutUrl = 'https://playout.3qsdn.com/' + dataId + '?js=true&data-id=' + dataId + '&container=sdnPlayer_player&autoplay=true&muted=false&width=100%25&height=100%25&controlbar=false'
+    playoutUrl = 'https://playout.3qsdn.com/' + dataId + '?js=true&skin=s04&data-id=' + dataId + '&container=sdnPlayer_player&preview=false&width=100%25&height=100%25'
 
     response = getUrl(playoutUrl)
 
@@ -259,7 +188,6 @@ def get_match_url(videoContainer):
     listitem = xbmcgui.ListItem(path=videourl)
     return xbmcplugin.setResolvedUrl(thisPlugin, True, listitem)
 
-    
 
 def addDir(name, url, mode, iconimage):
     parameters = {'url' : url.encode('utf-8'), 'mode' : str(mode), 'name' : name.encode('utf-8')}
@@ -306,6 +234,8 @@ def login():
     br = mechanize.Browser()
     br.set_cookiejar(cj)
     br.set_handle_robots(False)
+    br.addheaders = [('User-agent',
+                           'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0')]
     br.open(url)
 
     for form in br.forms():
@@ -313,66 +243,24 @@ def login():
             form['email'] = username
             form['password'] = password
             br.form = form
+            xbmc.log('Successfully set credentials in form')
             break
         except mechanize.ControlNotFoundError:
             pass
 
+    xbmc.log('Submit login request')
     br.submit()
+
+    br.open('https://schalke04.de/account/profil/')
     response = br.response().read()
-    soup = BeautifulSoup(''.join(response))
 
-    script = soup.find('script')
-    if (not script):
-        xbmc.log(missingelementtext % 'script')
-        return False, False
+    is_logged_in = '<li class="checked">First login' in response
+    has_schalke_tv = '<li class="checked" data-account-placeholder="is_tv_subscriber">' in response
 
-    """
-    script is expected to look like this:
-    <script>
-      dataLayer = [{
-        'userID': 123456,
-        'IsLoggedIn': true,
-        'hasSchalkeTV': true,
-        'hasSchalkeNewsletter': false,
-        'isAge': 42,
-        'isGender': 'mr',
-        'hasHospitality': false,
-        'hasPress': false,
-        'hasFanclub': false,
-        'hasTvAboHighlights': false,
-      }];
-    </script>
-    """
-    pattern = "'IsLoggedIn': (?P<is_logged_in>.*),\s*'hasSchalkeTV': (?P<has_schalke_tv>.*),\s*'hasSchalkeNewsletter'"
-    result = re.search(pattern, script.text)
-
-    is_logged_in = result.group('is_logged_in') == 'true'
-    has_schalke_tv = result.group('has_schalke_tv') == 'true'
-
-    xbmc.log('is_logged_in = %s' %is_logged_in)
-    xbmc.log('has_schalke_tv = %s' % has_schalke_tv)
-
-    if not is_logged_in:
-        xbmc.log('login failed')
-        xbmcgui.Dialog().ok(PLUGINNAME, language(30100) %username.decode('utf-8'), language(30101))
-        return False, False
+    xbmc.log('User is logged in = ' +str(is_logged_in))
+    xbmc.log('User has Schalke TV Abo = ' + str(has_schalke_tv))
 
     return is_logged_in, has_schalke_tv
-
-
-def searchMemberStatus(soup, status):
-    loginSuccessful = False
-    
-    for textelement in soup(text=status):
-        ahref = textelement.parent
-        li = ahref.parent
-        try:
-            isChecked = li['class'] == 'checked'
-            loginSuccessful = isChecked
-        except KeyError:
-            loginSuccessful = False
-            
-    return loginSuccessful
 
 
 def getUrl(url):
@@ -380,6 +268,8 @@ def getUrl(url):
         url = url.replace('&#38;','&')
         xbmc.log('Get url: '+url)
         browser.set_handle_robots(False)
+        browser.addheaders = [('User-agent',
+                          'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0')]
         try:
             browser.open(url)
             response = browser.response().read()
@@ -387,7 +277,6 @@ def getUrl(url):
             xbmc.log('Error while opening url: ' +str(exc))
             return ''
         return response
-    
 
 
 def runPlugin(url, doc):
