@@ -162,7 +162,9 @@ def getVideoUrl(url, doc):
     result = re.compile('data-id.+"(.+)",.+"container').findall(response)
     dataId = result[0].replace("\\", "")
 
-    playoutUrl = 'https://playout.3qsdn.com/' + dataId + '?js=true&skin=s04&data-id=' + dataId + '&container=sdnPlayer_player&preview=false&width=100%25&height=100%25'
+    playoutUrl = 'https://playout.3qsdn.com/' \
+                 + dataId + '?js=true&skin=s04&data-id=' \
+                 + dataId + '&container=sdnPlayer_player&preview=false&width=100%25&height=100%25'
 
     response = getUrl(playoutUrl)
 
@@ -285,7 +287,7 @@ def runPlugin(url, doc):
        
     elif mode==1:
         buildVideoDir(url, doc)
-        
+
     elif mode == 2:
         getVideoUrl(url, doc)
 
@@ -293,28 +295,28 @@ def runPlugin(url, doc):
 xbmc.log('S04TV: start addon')
 
 params = parse_qs(urlparse(sys.argv[2]).query)
-url=None
-name=None
-mode=None
+url = None
+name = None
+mode = None
 
 try:
-    url=params["url"][0]
-except:
-    pass
+    url = params["url"][0]
+except (IndexError, KeyError):
+    xbmc.log("No parameter url found")
 try:
-    name=params["name"][0]
-except:
-    pass
+    name = params["name"][0]
+except (IndexError, KeyError):
+    xbmc.log("No parameter name found")
 try:
-    mode=int(params["mode"][0])
-except:
-    pass
+    mode = int(params["mode"][0])
+except (IndexError, KeyError):
+    xbmc.log("No parameter mode found")
 
 xbmc.log("Mode: " +str(mode))
 xbmc.log("URL: "+str(url))
 xbmc.log("Name: "+str(name))
 
-if(url is None):
+if url is None:
     url = BASE_URL
 
 doc = getUrl(url)
