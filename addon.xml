@@ -1,9 +1,9 @@
-<addon id="plugin.video.s04tv" name="S04tv" provider-name="malte" version="3.2.1">
+<addon id="plugin.video.s04tv" name="S04tv" provider-name="malte" version="3.3.0">
     <requires>
-        <import addon="xbmc.python" version="2.14.0" />
-        <import addon="script.module.mechanize" version="0.2.6" />
-        <import addon="script.module.beautifulsoup" version="3.2.1" />
-        <import addon="plugin.video.youtube" version="5.2.1" />
+        <import addon="xbmc.python" version="3.0.0" />
+		<import addon="script.module.beautifulsoup4" version="4.9.3" />
+        <import addon="script.module.mechanize" version="0.4.3" />        
+        <import addon="plugin.video.youtube" version="6.8.10" />
     </requires>
     <extension library="default.py" point="xbmc.python.pluginsource">
         <provides>video</provides>

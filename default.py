@@ -17,9 +17,9 @@ import xbmc, xbmcplugin, xbmcgui, xbmcaddon
 import os, sys, re, json
 import urllib
 import uuid
-from urlparse import parse_qs, urlparse
-#import xml.etree.ElementTree as ET
-import cookielib
+from urllib.parse import parse_qs, urlparse, urlencode
+from http.cookiejar import CookieJar
+
 try:
     # Python 2.6-2.7
     from HTMLParser import HTMLParser
@@ -27,7 +27,7 @@ except ImportError:
     # Python 3
     from html.parser import HTMLParser
 
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 import mechanize
 
 PLUGINNAME = 'S04tv'
@@ -72,7 +72,7 @@ def buildVideoDir(url, doc):
     hideexclusive = addon.getSetting('hideexclusivevideos').upper() == 'TRUE'
     hideflag = addon.getSetting('hidefreeexclflag').upper() == 'TRUE'
     
-    soup = BeautifulSoup(''.join(doc))
+    soup = BeautifulSoup(doc)
     section = soup.find('section')
     if(not section):
         xbmc.log(missingelementtext%'section')
@@ -92,15 +92,15 @@ def buildVideoDir(url, doc):
         except KeyError:
             isPayedContent = False
         
-        img = ahref.find('img')
+        img = ahref.img
         if(img):
             imageUrl = img['data-lazy-src']
                
-        h3 = ahref.find('h3')
+        h3 = ahref.h3
         mode = 2
-        if(h3 is not None):
+        if(h3):
             title = ''
-            parts = str(h3).decode('utf-8').split()
+            parts = h3.getText().split()
             for part in parts:
                 title = title +' ' +part
             
@@ -108,6 +108,7 @@ def buildVideoDir(url, doc):
             title = HTMLParser().unescape(title)
         else:
             mode = 1
+            #30003 = next page
             title = language(30003)
         
         extraInfo = {}
@@ -151,16 +152,16 @@ def getVideoUrl(url, doc):
         return xbmcplugin.setResolvedUrl(thisPlugin, True, listitem)
 
     #find the url to the dataoptions markup
-    match_json_url = re.compile("url: '(.+)' \+").findall(doc)
+    match_json_url = re.compile(b"url: '(.+)' \+").findall(doc)
     if not match_json_url:
         xbmc.log(missingelementtext % 'url: ')
         return
 
-    json_url = 'https://schalke04.de' +match_json_url[0]+str(uuid.uuid1())
+    json_url = 'https://schalke04.de' +bytes(match_json_url[0]).decode('utf-8')+str(uuid.uuid1())
     response = getUrl(json_url)
 
-    result = re.compile('data-id.+"(.+)",.+"container').findall(response)
-    dataId = result[0].replace("\\", "")
+    result = re.compile(b'data-id.+"(.+)",.+"container').findall(response)
+    dataId = bytes(result[0]).decode('utf-8').replace("\\", "")
 
     playoutUrl = 'https://playout.3qsdn.com/' \
                  + dataId + '?js=true&skin=s04&data-id=' \
@@ -168,11 +169,11 @@ def getVideoUrl(url, doc):
 
     response = getUrl(playoutUrl)
 
-    match_playlist = re.compile('playlist: \((.+?)\)', re.DOTALL).findall(response)
+    match_playlist = re.compile(b'playlist: \((.+?)\)', re.DOTALL).findall(response)
     playlist = match_playlist[0]
 
     quote_keys_regex = r'([\{\s,])(\w+)(:)'
-    playlist = re.sub(quote_keys_regex, r'\1"\2"\3', playlist)
+    playlist = re.sub(quote_keys_regex, r'\1"\2"\3', playlist.decode('utf-8'))
 
     playlist = playlist.replace("'", '"')
     playlist = playlist.replace("\\x2F", '')
@@ -192,7 +193,7 @@ def getVideoUrl(url, doc):
 
 def addDir(name, url, mode, iconimage):
     parameters = {'url' : url.encode('utf-8'), 'mode' : str(mode), 'name' : name.encode('utf-8')}
-    u = sys.argv[0] +'?' +urllib.urlencode(parameters)
+    u = sys.argv[0] +'?' +urlencode(parameters)
     ok = True
     listitem = xbmcgui.ListItem(name)
     listitem.setArt({'icon': 'DefaultFolder.png', 'thumb': iconimage})
@@ -203,7 +204,7 @@ def addDir(name, url, mode, iconimage):
 
 def addLink(name, url, mode, iconimage, date, extraInfo):
     parameters = {'url' : url.encode('utf-8'), 'mode' : str(mode), 'name' : name.encode('utf-8')}
-    u = sys.argv[0] +'?' +urllib.urlencode(parameters)
+    u = sys.argv[0] +'?' +urlencode(parameters)
     ok = True
     listitem = xbmcgui.ListItem(name)
     listitem.setArt({'icon': 'DefaultVideo.png', 'thumb': iconimage})
@@ -231,7 +232,7 @@ def login():
     
     url = 'https://schalke04.de/account/login/'
     
-    cj = cookielib.CookieJar()
+    cj = CookieJar()
     br = mechanize.Browser()
     br.set_cookiejar(cj)
     br.set_handle_robots(False)
@@ -255,8 +256,8 @@ def login():
     br.open('https://schalke04.de/account/profil/')
     response = br.response().read()
 
-    is_logged_in = '<li class="checked">First login' in response
-    has_schalke_tv = '<li class="checked" data-account-placeholder="is_tv_subscriber">' in response
+    is_logged_in = b'<li class="checked">First login' in response
+    has_schalke_tv = b'<li class="checked" data-account-placeholder="is_tv_subscriber">' in response
 
     xbmc.log('User is logged in = ' +str(is_logged_in))
     xbmc.log('User has Schalke TV Abo = ' + str(has_schalke_tv))
@@ -265,8 +266,8 @@ def login():
 
 
 def getUrl(url):
-        url = url.replace('&amp;','&')
-        url = url.replace('&#38;','&')
+        url = str(url).replace('&amp;','&')
+        url = str(url).replace('&#38;','&')
         xbmc.log('Get url: '+url)
         browser.set_handle_robots(False)
         browser.addheaders = [('User-agent',
