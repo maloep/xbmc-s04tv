@@ -15,6 +15,9 @@
         <forum>http://forum.kodi.tv/showthread.php?tid=109692</forum>
         <website>https://github.com/maloep/xbmc-s04tv</website>
         <source>https://github.com/maloep/xbmc-s04tv</source>
+		<assets>
+			<icon>icon.png</icon>
+		</assets>
         <summary lang="de_DE">Videos von S04.tv ansehen</summary>
         <summary lang="en_GB">Watch videos from S04.tv</summary>
         <description lang="de_DE">Online Video Portal des FC Schalke 04. Alle Spiele in re-Live (15 Minuten nach Abfiff), News, Interviews, exklusive Berichte und Specials. Kostenlos für Schalke-Mitglieder, die re-Live Spiele setzen allerdings einen S04 TV Benutzer Account voraus (19,04 EUR/Jahr). Mehr Details auf https://schalke04.de/tv.</description>
