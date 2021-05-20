@@ -140,7 +140,7 @@ def getVideoUrl(url, doc):
     if(isPayedContent):
         if not has_schalke_tv:
             xbmc.log("This video requires payed Schalke TV subscription")
-            xbmcgui.Dialog().ok(PLUGINNAME, language(30104), language(30105))
+            xbmcgui.Dialog().ok(PLUGINNAME, "{0}\n{1}".format(language(30104), language(30105)))
             return
     
     #HACK: Free content may be hosted on youtube
@@ -227,7 +227,7 @@ def login():
     password = addon.getSetting('password')
     
     if(not username or not password):
-        xbmcgui.Dialog().ok(PLUGINNAME, language(30102), language(30103))
+        xbmcgui.Dialog().ok(PLUGINNAME, "{0}\n{1}".format(language(30102), language(30103)))
         return False, False
     
     url = 'https://schalke04.de/account/login/'
